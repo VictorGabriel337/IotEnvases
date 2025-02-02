@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="Dashboard.css" rel="stylesheet" />
+    <title>Dashboard</title>
+</head>
+<body>
+    <video autoplay muted loop id="videoBG">
+        <source src="video/videoplayback.mp4" type="video/mp4">
+      </video> 
+
+      <iframe class="sidebar-iframe" scrolling="no" src="../sidebar/sidebar.html"></iframe>
+
+    <div class="main">
+        
+        <div class="primeira-coluna">
+
+            <div class="definir">
+                <h3 class="text1">Produto</h3>
+                <div class="icon-img"> <img src="img/silhueta-garrafa.png"></div>
+                <select id="produtoSelect">
+                    <option value="card-coca/coca.html">Coca-cola original</option>
+                    <option value="card-coca/zero.html">Coca-cola zero</option>
+                    <option value="card-coca/fanta.html">Bi Fanta</option>
+                    <option value="garrafa sem rotulo">Garrafa sem rotulo</option>
+                </select>
+            </div>
+            <div class="definir">
+                <h3 class="text1">Garrafa produzida</h3>
+                <div class="icon-img"> <img src="img/silhueta-garrafa.png"></div>
+                <p id="lowCount" class="sensorlow">Carregando...</p>  <!-- Aqui será exibido o valor de lastLowTime -->
+            </div>
+            <div class="definir">
+                <h3 class="text1">Maq. Parada</h3>
+                <div class="icon-img"> <img src="img/silhueta-garrafa.png"></div>
+                <p id="maqParada" class="sensorlow">Carregando...</p>
+            </div>
+            <div class="definir">
+                <h3 class="text1">Maq. Produzindo</h3>
+                <div class="icon-img"> <img src="img/silhueta-garrafa.png"></div>
+                <p id="maqProduzindo" class="sensorlow">Carregando...</p>
+            </div>
+        </div>
+
+        <div class="segunda-coluna">
+            <div class="prim-coluna">
+                <iframe id="produtoIframe" class="coca-iframe" scrolling="no" src="card-coca/coca.html"></iframe>
+                <!-- <iframe class="coca-iframe" scrolling="no" src="card-coca/coca.html"></iframe>
+                <iframe class="coca-iframe" scrolling="no" src="card-coca/fanta.html"></iframe>
+                <iframe class="coca-iframe" scrolling="no" src="card-coca/zero.html"></iframe> -->
+            </div>
+            <div class="seg-coluna"></div>
+            <div class="ter-coluna"></div>
+        </div>
+
+        <div class="terceira-coluna">
+
+            <div class="first-column"></div>
+            <div class="second-column"></div>
+
+
+        </div>
+
+        <div class="quarta-coluna"> 
+            <div class="coluna-um"></div>
+            <div class="coluna-dois"></div>
+        </div>
+
+
+    </div> <!--div main-->
+
+    <script>
+        // Captura os elementos
+        const selectElement = document.getElementById('produtoSelect');
+        const iframeElement = document.getElementById('produtoIframe');
+
+        // Adiciona um evento para monitorar mudanças no select
+        selectElement.addEventListener('change', function() {
+            const selectedValue = this.value; // Pega o valor selecionado
+            iframeElement.src = selectedValue; // Atualiza o src do iframe
+
+
+
+
+        });
+
+</script>
+<script>
+    // Substituí o IP do ESP8266 aqui
+const espIP = "http://192.168.15.5/";
+
+// Função para buscar os dados do ESP8266
+async function fetchSensorData() {
+    try {
+        const response = await fetch(espIP);
+        if (!response.ok) {
+            throw new Error("Erro na resposta do servidor");
+        }
+        const data = await response.json();
+        console.log("Dados recebidos:", data);
+
+        if (data.lowSignalCount !== undefined) {
+            document.getElementById("lowCount").textContent = 
+                ` ${data.lowSignalCount}`;
+        } else {
+            throw new Error("Dados inválidos recebidos");
+        }
+
+        // Atualiza o tempo de produção (Maq. Produzindo)
+        if (data.cadenceTotalTime !== undefined) {
+            document.getElementById("maqProduzindo").textContent = 
+                ` ${formatarTempo(data.cadenceTotalTime )}`;
+        }
+
+        // Atualiza o tempo de parada (Maq. Parada)
+        if (data.nonCadenceTotalTime !== undefined) {
+            document.getElementById("maqParada").textContent = 
+                ` ${formatarTempo(data.nonCadenceTotalTime)}`;
+        }
+
+    } catch (error) {
+        console.error("Erro ao buscar os dados:", error);
+        document.getElementById("lowCount").textContent = "Erro ao exibir";
+        document.getElementById("maqProduzindo").textContent = "Erro ao exibir";
+        document.getElementById("maqParada").textContent = "Erro ao exibir";
+    }
+}
+
+// Função para formatar o tempo recebido em segundos para HH:MM:SS
+function formatarTempo(segundos) {
+    segundos = Math.floor(segundos);  // Garante que seja um número inteiro
+    let horas = Math.floor(segundos / 3600);
+    let minutos = Math.floor((segundos % 3600) / 60);
+    let segundosRestantes = segundos % 60;
+    return `${horas.toString().padStart(2, '0')}:${minutos.toString().padStart(2, '0')}:${segundosRestantes.toString().padStart(2, '0')}`;
+}
+
+
+// Atualiza os dados automaticamente a cada 2 segundos
+setInterval(fetchSensorData, 2000);
+
+    </script>
+
+
+
+    
+</body>
+</html>
