@@ -88,39 +88,63 @@
 
 </script>
 <script>
-  // Defina o endereço IP do ESP8266
-const espIp = 'http://192.168.15.7'; // Coloque o IP do seu ESP8266
+    // Substituí o IP do ESP8266 aqui
+const espIP = "https://192.168.15.7/";
 
-// Função para pegar os dados
-function getSensorData() {
-  // Usando fetch para fazer uma requisição GET ao servidor do ESP8266
-  fetch(espIp + 'https://victorgabriel337.github.io/IotEnvases/Envases/Dashboard/Dashboard.html')  // Defina a rota do seu endpoint
-    .then(response => {
-      if (!response.ok) {
-        throw new Error('Erro ao acessar o servidor');
-      }
-      return response.json();
-    })
-    .then(data => {
-      console.log('Dados recebidos:', data);
-      // Agora você pode usar os dados recebidos, como o tempo de cadência, etc.
-      document.getElementById('lowSignalCount').innerText = data.lowSignalCount;
-      document.getElementById('cadenceTotalTime').innerText = data.cadenceTotalTime;
-      document.getElementById('nonCadenceTotalTime').innerText = data.nonCadenceTotalTime;
-    })
-    .catch(error => {
-      console.error('Erro:', error);
-    });
+// Função para buscar os dados do ESP8266
+async function fetchSensorData() {
+    try {
+        const response = await fetch(espIP);
+        if (!response.ok) {
+            throw new Error("Erro na resposta do servidor");
+        }
+        const data = await response.json();
+        console.log("Dados recebidos:", data);
+
+        if (data.lowSignalCount !== undefined) {
+            document.getElementById("lowCount").textContent = 
+                ` ${data.lowSignalCount}`;
+        } else {
+            throw new Error("Dados inválidos recebidos");
+        }
+
+        // Atualiza o tempo de produção (Maq. Produzindo)
+        if (data.cadenceTotalTime !== undefined) {
+            document.getElementById("maqProduzindo").textContent = 
+                ` ${formatarTempo(data.cadenceTotalTime )}`;
+        }
+
+        // Atualiza o tempo de parada (Maq. Parada)
+        if (data.nonCadenceTotalTime !== undefined) {
+            document.getElementById("maqParada").textContent = 
+                ` ${formatarTempo(data.nonCadenceTotalTime)}`;
+        }
+
+    } catch (error) {
+        console.error("Erro ao buscar os dados:", error);
+        document.getElementById("lowCount").textContent = "Erro ao exibir";
+        document.getElementById("maqProduzindo").textContent = "Erro ao exibir";
+        document.getElementById("maqParada").textContent = "Erro ao exibir";
+    }
 }
 
-// Chame a função para pegar os dados
-getSensorData();
+// Função para formatar o tempo recebido em segundos para HH:MM:SS
+function formatarTempo(segundos) {
+    segundos = Math.floor(segundos);  // Garante que seja um número inteiro
+    let horas = Math.floor(segundos / 3600);
+    let minutos = Math.floor((segundos % 3600) / 60);
+    let segundosRestantes = segundos % 60;
+    return `${horas.toString().padStart(2, '0')}:${minutos.toString().padStart(2, '0')}:${segundosRestantes.toString().padStart(2, '0')}`;
+}
 
-// Para pegar os dados a cada 5 segundos, por exemplo:
-setInterval(getSensorData, 5000);
 
+// Atualiza os dados automaticamente a cada 2 segundos
+setInterval(fetchSensorData, 2000);
 
     </script>
+
+
+
 
 
 
