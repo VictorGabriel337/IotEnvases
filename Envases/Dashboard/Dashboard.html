@@ -88,16 +88,18 @@
 
 </script>
 <script>
-fetch("https://iotenvases-production.up.railway.app/api")
+    // URL do proxy hospedado no Railway
+const proxyURL = "https://iotenvases-production.up.railway.app/api";  
 
+// Função para buscar os dados do ESP8266 via proxy
 async function fetchSensorData() {
     try {
         const response = await fetch(proxyURL);
         if (!response.ok) {
-            throw new Error("Erro na resposta do proxy");
+            throw new Error("Erro na resposta do servidor");
         }
         const data = await response.json();
-        console.log("Dados recebidos do proxy:", data);
+        console.log("Dados recebidos:", data);
 
         if (data.lowSignalCount !== undefined) {
             document.getElementById("lowCount").textContent = ` ${data.lowSignalCount}`;
@@ -105,14 +107,14 @@ async function fetchSensorData() {
             throw new Error("Dados inválidos recebidos");
         }
 
+        // Atualiza o tempo de produção (Maq. Produzindo)
         if (data.cadenceTotalTime !== undefined) {
-            document.getElementById("maqProduzindo").textContent = 
-                ` ${formatarTempo(data.cadenceTotalTime)}`;
+            document.getElementById("maqProduzindo").textContent = ` ${formatarTempo(data.cadenceTotalTime)}`;
         }
 
+        // Atualiza o tempo de parada (Maq. Parada)
         if (data.nonCadenceTotalTime !== undefined) {
-            document.getElementById("maqParada").textContent = 
-                ` ${formatarTempo(data.nonCadenceTotalTime)}`;
+            document.getElementById("maqParada").textContent = ` ${formatarTempo(data.nonCadenceTotalTime)}`;
         }
 
     } catch (error) {
@@ -123,11 +125,22 @@ async function fetchSensorData() {
     }
 }
 
-// Mantém a atualização automática
+// Função para formatar tempo (segundos -> HH:MM:SS)
+function formatarTempo(segundos) {
+    segundos = Math.floor(segundos);  
+    let horas = Math.floor(segundos / 3600);
+    let minutos = Math.floor((segundos % 3600) / 60);
+    let segundosRestantes = segundos % 60;
+    return `${horas.toString().padStart(2, '0')}:${minutos.toString().padStart(2, '0')}:${segundosRestantes.toString().padStart(2, '0')}`;
+}
+
+// Atualiza os dados automaticamente a cada 2 segundos
 setInterval(fetchSensorData, 2000);
 
-    </script>
+// Chama a função imediatamente ao carregar a página
+fetchSensorData();
 
+</script>
 
 
 
