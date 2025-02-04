@@ -14,5 +14,12 @@ def get_sensor_data():
     except requests.exceptions.RequestException as e:
         return jsonify({"error": "Falha ao conectar ao ESP8266", "details": str(e)}), 500
 
+# if __name__ == '__main__':
+#     app.run(host="0.0.0.0", port=5000)
+
+
+import os
+
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=5000)
+    port = int(os.environ.get("PORT", 5000))  # Usa a porta definida pelo Railway ou 5000 como fallback
+    app.run(host="0.0.0.0", port=port)
