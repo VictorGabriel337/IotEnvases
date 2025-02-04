@@ -1,20 +1,18 @@
-from flask import Flask, request, jsonify
+from flask import Flask, jsonify
 import requests
 
 app = Flask(__name__)
 
-# URL do ESP8266 na sua rede local
-ESP_URL = "http://192.168.15.7/dados"  # Substitua pelo IP real do ESP
+ESP_IP = "http://192.168.15.7:80/"  # IP do ESP8266 na rede local
 
-@app.route("/dados", methods=["GET"])
-def proxy():
+@app.route('/api', methods=['GET'])
+def get_sensor_data():
     try:
-        # Faz a requisição ao ESP8266
-        response = requests.get(ESP_URL, timeout=5)
-        data = response.json()  # Converte a resposta para JSON
-        return jsonify(data)  # Retorna os dados para o site
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        response = requests.get(ESP_IP, timeout=5)  # Requisição ao ESP8266
+        response.raise_for_status()  # Levanta erro se houver falha
+        return jsonify(response.json())  # Retorna os dados recebidos para a aplicação
+    except requests.exceptions.RequestException as e:
+        return jsonify({"error": "Falha ao conectar ao ESP8266", "details": str(e)}), 500
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5000)
