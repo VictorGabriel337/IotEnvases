@@ -1,6 +1,0 @@
-Flask
-requests
-paho-mqtt
-python-dotenv
-flask-cors
-gunicorn
