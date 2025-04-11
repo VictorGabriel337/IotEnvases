@@ -89,12 +89,11 @@
 </script>
 <script>
     // Substituí o IP do ESP8266 aqui
-const espIP = "http://192.168.15.7/";
+    const backendURL = "https://seu-backend.onrender.com/sensores";
 
-// Função para buscar os dados do ESP8266
-async function fetchSensorData() {
+    async function fetchSensorData() {
     try {
-        const response = await fetch(espIP);
+        const response = await fetch(backendURL);
         if (!response.ok) {
             throw new Error("Erro na resposta do servidor");
         }
@@ -108,13 +107,11 @@ async function fetchSensorData() {
             throw new Error("Dados inválidos recebidos");
         }
 
-        // Atualiza o tempo de produção (Maq. Produzindo)
         if (data.cadenceTotalTime !== undefined) {
             document.getElementById("maqProduzindo").textContent = 
                 ` ${formatarTempo(data.cadenceTotalTime )}`;
         }
 
-        // Atualiza o tempo de parada (Maq. Parada)
         if (data.nonCadenceTotalTime !== undefined) {
             document.getElementById("maqParada").textContent = 
                 ` ${formatarTempo(data.nonCadenceTotalTime)}`;
@@ -128,18 +125,6 @@ async function fetchSensorData() {
     }
 }
 
-// Função para formatar o tempo recebido em segundos para HH:MM:SS
-function formatarTempo(segundos) {
-    segundos = Math.floor(segundos);  // Garante que seja um número inteiro
-    let horas = Math.floor(segundos / 3600);
-    let minutos = Math.floor((segundos % 3600) / 60);
-    let segundosRestantes = segundos % 60;
-    return `${horas.toString().padStart(2, '0')}:${minutos.toString().padStart(2, '0')}:${segundosRestantes.toString().padStart(2, '0')}`;
-}
-
-
-// Atualiza os dados automaticamente a cada 2 segundos
-setInterval(fetchSensorData, 2000);
 
 </script>
 
