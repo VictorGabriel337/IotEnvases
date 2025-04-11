@@ -23,16 +23,3 @@ window.addEventListener("resize", function() {
     iframe.style.height = window.innerHeight + "px";  // Ajusta a altura para a altura da janela
     iframe.style.width = "250px";  // Mantém a largura fixa
 });
-
-document.addEventListener("DOMContentLoaded", function () {
-    const usuarioLogado = JSON.parse(localStorage.getItem("usuarioLogado"));
-
-    if (usuarioLogado) {
-        document.querySelector(".user-img img").src = usuarioLogado.img;
-        document.querySelector(".user-details .title").textContent = usuarioLogado.cargo;
-        document.querySelector(".user-details .name").textContent = usuarioLogado.nome;
-    } else {
-        // Se não houver usuário logado, redireciona para a página de login
-        window.location.href = "../login/index.html";
-    }
-});
