@@ -20,8 +20,10 @@ $(".menu-btn").click(function () {
 
 window.addEventListener("resize", function() {
     var iframe = document.getElementById('sidebar-iframe');
-    iframe.style.height = window.innerHeight + "px";  // Ajusta a altura para a altura da janela
-    iframe.style.width = "250px";  // Mantém a largura fixa
+    if (iframe) {
+        iframe.style.height = window.innerHeight + "px";
+        iframe.style.width = "250px";
+    }
 });
 
 const meuElemento = document.getElementById("algumId");
