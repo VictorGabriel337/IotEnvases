@@ -1,8 +1,10 @@
 from flask import Flask, jsonify
 import paho.mqtt.client as mqtt
 import threading
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 
 # Variáveis globais para guardar os dados mais recentes
 dados_sensores = {
