@@ -4,7 +4,7 @@ import threading
 from flask_cors import CORS
 
 app = Flask(__name__)
-CORS(app)  # Habilitar CORS para todas as rotas
+CORS(app, resources={r"/*": {"origins": "https://iotenvases.netlify.app"}})
 app.run(host='0.0.0.0', port=5000, debug=True)
 
 # Variáveis globais para guardar os dados mais recentes
