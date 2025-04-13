@@ -89,7 +89,7 @@
 </script>
 <script>
     // Substituí o IP do ESP8266 aqui
-    const backendURL = "https://seu-backend.onrender.com/sensores";
+    const backendURL = "https://iotenvases.onrender.com";
 
     async function fetchSensorData() {
     try {
@@ -124,6 +124,9 @@
         document.getElementById("maqParada").textContent = "Erro ao exibir";
     }
 }
+
+    setInterval(fetchSensorData, 5000); // Chama a função a cada 5s
+
 
 
 </script>
