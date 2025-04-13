@@ -5,7 +5,7 @@ from flask_cors import CORS
 
 app = Flask(__name__)
 CORS(app)
-app.run(host='0.0.0.0', port=5000, debug=True)
+app.run(debug=True, host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
 
 # Variáveis globais para guardar os dados mais recentes
 dados_sensores = {
@@ -26,7 +26,7 @@ MQTT_PASSWORD = "Iotenvases42"
 # # Rota para o front-end
 @app.route('/')
 def index():
-    return render_template('Dashboard/dashboard.html')  # Exemplo, altere conforme necessário
+    return render_template('dashboard.html')  # Exemplo, altere conforme necessário
 
 
 def on_connect(client, userdata, flags, rc):
