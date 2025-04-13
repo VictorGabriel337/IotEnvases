@@ -26,7 +26,7 @@ MQTT_PASSWORD = "Iotenvases42"
 # # Rota para o front-end
 @app.route('/')
 def index():
-    return render_template('dashboard.html')  # Exemplo, altere conforme necessário
+    return render_template('Dashboard/dashboard.html')  # Exemplo, altere conforme necessário
 
 
 def on_connect(client, userdata, flags, rc):
