@@ -19,7 +19,6 @@ MQTT_USERNAME = "Iotenvases"
 MQTT_PASSWORD = "Iotenvases42"   
 
 
-client.tls_set()
 
 def on_connect(client, userdata, flags, rc):
     print("Conectado ao MQTT:", rc)
