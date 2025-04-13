@@ -1,10 +1,9 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify , render_template
 import paho.mqtt.client as mqtt
 import threading
 from flask_cors import CORS
 
 app = Flask(__name__)
-CORS(app)
 
 # Variáveis globais para guardar os dados mais recentes
 dados_sensores = {
@@ -20,6 +19,12 @@ MQTT_TOPIC = "machine/status"
 MQTT_USERNAME = "Iotenvases"  
 MQTT_PASSWORD = "Iotenvases42"   
 
+
+
+# Rota para o front-end
+@app.route('/')
+def index():
+    return render_template('index.html')  # Exemplo, altere conforme necessário
 
 
 def on_connect(client, userdata, flags, rc):
