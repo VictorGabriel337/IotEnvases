@@ -23,3 +23,8 @@ window.addEventListener("resize", function() {
     iframe.style.height = window.innerHeight + "px";  // Ajusta a altura para a altura da janela
     iframe.style.width = "250px";  // Mantém a largura fixa
 });
+
+const meuElemento = document.getElementById("algumId");
+if (meuElemento) {
+    meuElemento.style.display = "block";
+}
