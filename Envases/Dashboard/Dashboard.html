@@ -123,6 +123,10 @@
         document.getElementById("maqProduzindo").textContent = "Erro ao exibir";
         document.getElementById("maqParada").textContent = "Erro ao exibir";
     }
+    const meuElemento = document.getElementById("algumId");
+if (meuElemento) {
+    meuElemento.style.display = "block";
+}
 }
 
     setInterval(fetchSensorData, 5000); // Chama a função a cada 5s

@@ -4,6 +4,8 @@ import threading
 from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)  # Habilitar CORS para todas as rotas
+app.run(host='0.0.0.0', port=5000, debug=True)
 
 # Variáveis globais para guardar os dados mais recentes
 dados_sensores = {
@@ -21,10 +23,10 @@ MQTT_PASSWORD = "Iotenvases42"
 
 
 
-# Rota para o front-end
-@app.route('/')
-def index():
-    return render_template('index.html')  # Exemplo, altere conforme necessário
+# # Rota para o front-end
+# @app.route('/')
+# def index():
+#     return render_template('index.html')  # Exemplo, altere conforme necessário
 
 
 def on_connect(client, userdata, flags, rc):
