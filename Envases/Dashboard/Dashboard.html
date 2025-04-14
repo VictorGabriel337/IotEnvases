@@ -107,28 +107,26 @@
         if (!response.ok) {
             throw new Error("Erro na resposta do servidor");
         }
-        const data = await response.json();
+        const data = await response.json();  // Garantir que 'data' seja obtida aqui
         console.log("Dados recebidos:", data);
 
+        // Log dos dados para verificar
         console.log("Low Signal Count:", data.lowSignalCount);
         console.log("Cadence Total Time:", formatarTempo(data.cadenceTotalTime));
         console.log("Non Cadence Total Time:", formatarTempo(data.nonCadenceTotalTime));
 
         if (data.lowSignalCount !== undefined) {
-            document.getElementById("lowCount").textContent = 
-                ` ${data.lowSignalCount}`;
+            document.getElementById("lowCount").textContent = ` ${data.lowSignalCount}`;
         } else {
             throw new Error("Dados inválidos recebidos");
         }
 
         if (data.cadenceTotalTime !== undefined) {
-            document.getElementById("maqProduzindo").textContent = 
-                ` ${formatarTempo(data.cadenceTotalTime )}`;
+            document.getElementById("maqProduzindo").textContent = ` ${formatarTempo(data.cadenceTotalTime)}`;
         }
 
         if (data.nonCadenceTotalTime !== undefined) {
-            document.getElementById("maqParada").textContent = 
-                ` ${formatarTempo(data.nonCadenceTotalTime)}`;
+            document.getElementById("maqParada").textContent = ` ${formatarTempo(data.nonCadenceTotalTime)}`;
         }
 
     } catch (error) {
@@ -137,11 +135,7 @@
         document.getElementById("maqProduzindo").textContent = "Erro ao exibir";
         document.getElementById("maqParada").textContent = "Erro ao exibir";
     }
-    
-    
 }
-
-    setInterval(fetchSensorData, 5000); // Chama a função a cada 5s
 
 
 
