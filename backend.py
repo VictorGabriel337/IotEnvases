@@ -26,7 +26,7 @@ def home():
 @app.route("/sensores")
 def sensores():
     with status_lock:
-        # Retorna os dados mais recentes do MQTT (os dados do sensor)
+        print("Acessando /sensores")
         return jsonify(latest_status)
 
 latest_status = {}
