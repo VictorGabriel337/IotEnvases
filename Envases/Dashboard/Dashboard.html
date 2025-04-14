@@ -102,42 +102,45 @@
     const backendURL = "https://iotenvases.onrender.com/sensores";
 
     async function fetchSensorData() {
-    try {
-        const response = await fetch(backendURL);
-        if (!response.ok) {
-            throw new Error("Erro na resposta do servidor");
+        try {
+            const response = await fetch(backendURL);
+            if (!response.ok) {
+                throw new Error("Erro na resposta do servidor");
+            }
+            const data = await response.json();
+            console.log("Dados recebidos:", data);
+
+            console.log("Low Signal Count:", data.lowSignalCount);
+            console.log("Cadence Total Time:", formatarTempo(data.cadenceTotalTime));
+            console.log("Non Cadence Total Time:", formatarTempo(data.nonCadenceTotalTime));
+
+            if (data.lowSignalCount !== undefined) {
+                document.getElementById("lowCount").textContent = ` ${data.lowSignalCount}`;
+            } else {
+                throw new Error("Dados inválidos recebidos");
+            }
+
+            if (data.cadenceTotalTime !== undefined) {
+                document.getElementById("maqProduzindo").textContent = ` ${formatarTempo(data.cadenceTotalTime)}`;
+            }
+
+            if (data.nonCadenceTotalTime !== undefined) {
+                document.getElementById("maqParada").textContent = ` ${formatarTempo(data.nonCadenceTotalTime)}`;
+            }
+
+        } catch (error) {
+            console.error("Erro ao buscar os dados:", error);
+            document.getElementById("lowCount").textContent = "Erro ao exibir";
+            document.getElementById("maqProduzindo").textContent = "Erro ao exibir";
+            document.getElementById("maqParada").textContent = "Erro ao exibir";
         }
-        const data = await response.json();  // Garantir que 'data' seja obtida aqui
-        console.log("Dados recebidos:", data);
-
-        // Log dos dados para verificar
-        console.log("Low Signal Count:", data.lowSignalCount);
-        console.log("Cadence Total Time:", formatarTempo(data.cadenceTotalTime));
-        console.log("Non Cadence Total Time:", formatarTempo(data.nonCadenceTotalTime));
-
-        if (data.lowSignalCount !== undefined) {
-            document.getElementById("lowCount").textContent = ` ${data.lowSignalCount}`;
-        } else {
-            throw new Error("Dados inválidos recebidos");
-        }
-
-        if (data.cadenceTotalTime !== undefined) {
-            document.getElementById("maqProduzindo").textContent = ` ${formatarTempo(data.cadenceTotalTime)}`;
-        }
-
-        if (data.nonCadenceTotalTime !== undefined) {
-            document.getElementById("maqParada").textContent = ` ${formatarTempo(data.nonCadenceTotalTime)}`;
-        }
-
-    } catch (error) {
-        console.error("Erro ao buscar os dados:", error);
-        document.getElementById("lowCount").textContent = "Erro ao exibir";
-        document.getElementById("maqProduzindo").textContent = "Erro ao exibir";
-        document.getElementById("maqParada").textContent = "Erro ao exibir";
     }
-}
 
+    // CHAMAR A FUNÇÃO AQUI 
+    fetchSensorData();
 
+    // OPCIONAL: Atualizar os dados a cada 10 segundos:
+    setInterval(fetchSensorData, 10000);
 
 </script>
 
