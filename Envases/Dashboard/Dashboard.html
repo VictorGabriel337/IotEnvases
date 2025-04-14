@@ -129,14 +129,14 @@
 
             // Verifica e exibe o tempo total de cadência
             if (data.cadenceTotalTime !== undefined) {
-                document.getElementById("maqProduzindo").textContent = `${(data.cadenceTotalTime)}`;
+                document.getElementById("maqProduzindo").textContent = `${data.cadenceTotalTime}`;
             } else {
                 throw new Error("Cadence Total Time inválido");
             }
 
             // Verifica e exibe o tempo total de não cadência
             if (data.nonCadenceTotalTime !== undefined) {
-                document.getElementById("maqParada").textContent = `${(data.nonCadenceTotalTime)}`;
+                document.getElementById("maqParada").textContent = `${data.nonCadenceTotalTime}`;
             } else {
                 throw new Error("Non Cadence Total Time inválido");
             }
