@@ -27,6 +27,8 @@ def home():
 def sensores():
     with status_lock:
         print("Acessando /sensores")
+        if not latest_status:
+            return jsonify({"message": "Aguardando dados do sensor..."})
         return jsonify(latest_status)
 
 latest_status = {}
@@ -36,10 +38,11 @@ def on_message(client, userdata, msg):
     global latest_status
     if msg.topic == "machine/status":
         latest_status = json.loads(msg.payload.decode())
-        print("Mensagem recebida:", latest_status)
+        print("Mensagem recebida via MQTT:", latest_status)
 
 
 def mqtt_thread():
+    print("Iniciando conexão MQTT...")
     mqtt_client = mqtt.Client()
     mqtt_client.username_pw_set("Iotenvases", "Iotenvases42")
     mqtt_client.tls_set()
