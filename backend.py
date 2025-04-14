@@ -7,6 +7,22 @@ import json
 app = Flask(__name__)
 CORS(app)  # Libera o CORS para todas as rotas e origens
 
+
+@app.route("/")
+def home():
+    return send_from_directory(os.path.join(app.root_path, 'Envases', 'Dashboard'), 'Dashboard.html')
+
+
+@app.route("/sensores")
+def sensores():
+    # Aqui você pode conectar com MQTT, banco de dados ou variáveis mockadas
+    # Por enquanto vamos usar valores simulados (só pra teste)
+    return jsonify({
+        "lowSignalCount": 15,
+        "cadenceTotalTime": 120,       # em segundos
+        "nonCadenceTotalTime": 30      # em segundos
+    })
+
 latest_status = {}
 
 def on_message(client, userdata, msg):
