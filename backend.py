@@ -3,6 +3,7 @@ from flask_cors import CORS
 import paho.mqtt.client as mqtt
 import threading
 import json
+import os
 
 app = Flask(__name__)
 CORS(app)  # Libera o CORS para todas as rotas e origens
