@@ -1,60 +1,34 @@
-from flask import Flask, jsonify , render_template
+from flask import Flask, jsonify
+from flask_cors import CORS
 import paho.mqtt.client as mqtt
 import threading
-from flask_cors import CORS
+import json
 
 app = Flask(__name__)
-CORS(app)
-app.run(debug=True, host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
+CORS(app)  # Libera o CORS para todas as rotas e origens
 
-# Variáveis globais para guardar os dados mais recentes
-dados_sensores = {
-    "lowSignalCount": 0,
-    "cadenceTotalTime": 0,
-    "nonCadenceTotalTime": 0
-}
-
-# MQTT config
-MQTT_BROKER = "534dc0a4d7544a60a30022826acda692.s1.eu.hivemq.cloud"
-MQTT_PORT = 8883
-MQTT_TOPIC = "machine/status"
-MQTT_USERNAME = "Iotenvases"  
-MQTT_PASSWORD = "Iotenvases42"   
-
-
-
-# # Rota para o front-end
-@app.route('/Dashboard', methods=['GET'])
-def index():
-    return render_template('dashboard.html')  # Exemplo, altere conforme necessário
-
-
-def on_connect(client, userdata, flags, rc):
-    print("Conectado ao MQTT:", rc)
-    client.subscribe(MQTT_TOPIC)
+latest_status = {}
 
 def on_message(client, userdata, msg):
-    import json
-    try:
-        payload = json.loads(msg.payload.decode())
-        print("Payload recebido:", payload)
-        dados_sensores.update(payload)
-    except Exception as e:
-        print("Erro ao processar payload:", e)
+    global latest_status
+    if msg.topic == "machine/status":
+        latest_status = json.loads(msg.payload.decode())
+        print("Mensagem recebida:", latest_status)
 
-def iniciar_mqtt():
-    client = mqtt.Client()
-    client.on_connect = on_connect
-    client.on_message = on_message
-    client.connect(MQTT_BROKER, MQTT_PORT, 60)
-    client.loop_forever()
+def mqtt_thread():
+    mqtt_client = mqtt.Client()
+    mqtt_client.username_pw_set("Iotenvases", "Iotenvases42")
+    mqtt_client.tls_set()
+    mqtt_client.connect("534dc0a4d7544a60a30022826acda692.s1.eu.hivemq.cloud", 8883)
+    mqtt_client.subscribe("machine/status")
+    mqtt_client.on_message = on_message
+    mqtt_client.loop_forever()
 
-# Iniciar MQTT em outra thread
-threading.Thread(target=iniciar_mqtt, daemon=True).start()
+threading.Thread(target=mqtt_thread).start()
 
-@app.route('/sensores', methods=['GET'])
-def get_dados():
-    return jsonify(dados_sensores)
+@app.route("/status", methods=["GET"])
+def get_status():
+    return jsonify(latest_status)
 
-if __name__ == '__main__':
-    app.run(debug=True)
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)
