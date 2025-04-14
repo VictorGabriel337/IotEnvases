@@ -109,7 +109,7 @@
              throw new Error("Erro na resposta do servidor");
          }
          const data = await response.json();
-         console.log("Dados recebidos:", data);
+         console.log("Dados recebidos:", data); // Log para verificar os dados
 
          if (data.message) {
              // Se os dados tiverem a chave 'message', exibe ela
@@ -120,8 +120,6 @@
              // Caso contrário, continua o tratamento como estava
              if (data.lowSignalCount !== undefined) {
                  document.getElementById("lowCount").textContent = ` ${data.lowSignalCount}`;
-             } else {
-                 throw new Error("Dados inválidos recebidos");
              }
 
              if (data.cadenceTotalTime !== undefined) {
@@ -140,6 +138,7 @@
          document.getElementById("maqParada").textContent = "Erro ao exibir";
      }
  }
+
 
 </script>
 
