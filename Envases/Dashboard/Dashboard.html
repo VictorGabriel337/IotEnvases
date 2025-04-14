@@ -102,8 +102,6 @@
     const backendURL = "https://iotenvases.onrender.com/sensores";
     console.log(" Script carregado!");
 
-    
-
     async function fetchSensorData() {
      try {
          const response = await fetch(backendURL);
@@ -140,12 +138,6 @@
          document.getElementById("maqParada").textContent = "Erro ao exibir";
      }
  }
-
-     // Executa ao carregar a página
-     document.addEventListener("DOMContentLoaded", () => {
-        fetchSensorData();
-        setInterval(fetchSensorData, 5000); // Atualiza a cada 5 segundos
-    });
 
 </script>
 
