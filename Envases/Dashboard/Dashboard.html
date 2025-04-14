@@ -103,57 +103,41 @@
     console.log(" Script carregado!");
 
     async function fetchSensorData() {
-        try {
-            const response = await fetch(backendURL);
-            if (!response.ok) {
-                throw new Error("Erro na resposta do servidor");
-            }
-            const data = await response.json();
-            console.log("Dados recebidos:", data);
+     try {
+         const response = await fetch(backendURL);
+         if (!response.ok) {
+             throw new Error("Erro na resposta do servidor");
+         }
+         const data = await response.json();
+         console.log("Dados recebidos:", data); // Log para verificar os dados
 
-            // Verifica se a mensagem recebida não é "Aguardando dados do sensor..."
-            if (data.message && data.message === "Aguardando dados do sensor...") {
-                console.log("Aguardando dados do sensor...");
-                document.getElementById("lowCount").textContent = "Aguardando dados...";
-                document.getElementById("maqProduzindo").textContent = "Aguardando dados...";
-                document.getElementById("maqParada").textContent = "Aguardando dados...";
-                return;  // Se a mensagem for "Aguardando dados", não continua o processamento
-            }
+         // Verificar se 'message' está presente nos dados
+         if (data.message) {
+             document.getElementById("lowCount").textContent = data.message;
+             document.getElementById("maqProduzindo").textContent = data.message;
+             document.getElementById("maqParada").textContent = data.message;
+         } else {
+             // Caso contrário, continuar tratando os dados conforme esperado
+             if (data.lowSignalCount !== undefined) {
+                 document.getElementById("lowCount").textContent = ` ${data.lowSignalCount}`;
+             }
 
-            // Verifica e exibe os dados de lowSignalCount
-            if (data.lowSignalCount !== undefined) {
-                document.getElementById("lowCount").textContent = `${data.lowSignalCount}`;
-            } else {
-                throw new Error("Low Signal Count inválido");
-            }
+             if (data.cadenceTotalTime !== undefined) {
+                 document.getElementById("maqProduzindo").textContent = ` ${formatarTempo(data.cadenceTotalTime)}`;
+             }
 
-            // Verifica e exibe o tempo total de cadência
-            if (data.cadenceTotalTime !== undefined) {
-                document.getElementById("maqProduzindo").textContent = `${data.cadenceTotalTime}`;
-            } else {
-                throw new Error("Cadence Total Time inválido");
-            }
+             if (data.nonCadenceTotalTime !== undefined) {
+                 document.getElementById("maqParada").textContent = ` ${formatarTempo(data.nonCadenceTotalTime)}`;
+             }
+         }
 
-            // Verifica e exibe o tempo total de não cadência
-            if (data.nonCadenceTotalTime !== undefined) {
-                document.getElementById("maqParada").textContent = `${data.nonCadenceTotalTime}`;
-            } else {
-                throw new Error("Non Cadence Total Time inválido");
-            }
-
-        } catch (error) {
-            console.error("Erro ao buscar os dados:", error);
-            document.getElementById("lowCount").textContent = "Erro ao exibir";
-            document.getElementById("maqProduzindo").textContent = "Erro ao exibir";
-            document.getElementById("maqParada").textContent = "Erro ao exibir";
-        }
-    }
-
-    // CHAMAR A FUNÇÃO AQUI 
-    fetchSensorData();
-
-    // OPCIONAL: Atualizar os dados a cada 10 segundos:
-    setInterval(fetchSensorData, 10000);
+     } catch (error) {
+         console.error("Erro ao buscar os dados:", error);
+         document.getElementById("lowCount").textContent = "Erro ao exibir";
+         document.getElementById("maqProduzindo").textContent = "Erro ao exibir";
+         document.getElementById("maqParada").textContent = "Erro ao exibir";
+     }
+ }
 
 </script>
 
