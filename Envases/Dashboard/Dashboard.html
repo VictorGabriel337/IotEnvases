@@ -111,22 +111,34 @@
             const data = await response.json();
             console.log("Dados recebidos:", data);
 
-            console.log("Low Signal Count:", data.lowSignalCount);
-            console.log("Cadence Total Time:", formatarTempo(data.cadenceTotalTime));
-            console.log("Non Cadence Total Time:", formatarTempo(data.nonCadenceTotalTime));
+            // Verifica se a mensagem recebida não é "Aguardando dados do sensor..."
+            if (data.message && data.message === "Aguardando dados do sensor...") {
+                console.log("Aguardando dados do sensor...");
+                document.getElementById("lowCount").textContent = "Aguardando dados...";
+                document.getElementById("maqProduzindo").textContent = "Aguardando dados...";
+                document.getElementById("maqParada").textContent = "Aguardando dados...";
+                return;  // Se a mensagem for "Aguardando dados", não continua o processamento
+            }
 
+            // Verifica e exibe os dados de lowSignalCount
             if (data.lowSignalCount !== undefined) {
-                document.getElementById("lowCount").textContent = ` ${data.lowSignalCount}`;
+                document.getElementById("lowCount").textContent = `${data.lowSignalCount}`;
             } else {
-                throw new Error("Dados inválidos recebidos");
+                throw new Error("Low Signal Count inválido");
             }
 
+            // Verifica e exibe o tempo total de cadência
             if (data.cadenceTotalTime !== undefined) {
-                document.getElementById("maqProduzindo").textContent = ` ${formatarTempo(data.cadenceTotalTime)}`;
+                document.getElementById("maqProduzindo").textContent = `${formatarTempo(data.cadenceTotalTime)}`;
+            } else {
+                throw new Error("Cadence Total Time inválido");
             }
 
+            // Verifica e exibe o tempo total de não cadência
             if (data.nonCadenceTotalTime !== undefined) {
-                document.getElementById("maqParada").textContent = ` ${formatarTempo(data.nonCadenceTotalTime)}`;
+                document.getElementById("maqParada").textContent = `${formatarTempo(data.nonCadenceTotalTime)}`;
+            } else {
+                throw new Error("Non Cadence Total Time inválido");
             }
 
         } catch (error) {
