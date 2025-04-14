@@ -139,6 +139,12 @@
      }
  }
 
+     // Executa ao carregar a página
+     document.addEventListener("DOMContentLoaded", () => {
+        fetchSensorData();
+        setInterval(fetchSensorData, 5000); // Atualiza a cada 5 segundos
+    });
+
 </script>
 
 
