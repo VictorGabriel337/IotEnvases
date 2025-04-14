@@ -24,12 +24,18 @@ def sensores():
     })
 
 latest_status = {}
+status_lock = threading.Lock()
 
 def on_message(client, userdata, msg):
     global latest_status
     if msg.topic == "machine/status":
         latest_status = json.loads(msg.payload.decode())
         print("Mensagem recebida:", latest_status)
+
+@app.route("/status", methods=["GET"])
+def get_status():
+    with status_lock:
+        return jsonify(latest_status)
 
 def mqtt_thread():
     mqtt_client = mqtt.Client()
