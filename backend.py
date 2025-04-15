@@ -13,11 +13,6 @@ CORS(app)  # Libera o CORS para todas as rotas e origens
 def home():
     return send_from_directory(os.path.join(app.root_path, 'Envases', 'Dashboard'), 'Dashboard.html')
 
-dados_sensores = {
-    "lowSignalCount": None,
-    "cadenceTotalTime": None,
-    "nonCadenceTotalTime": None
-}
 
 # @app.route("/sensores", methods=["GET"])
 # def get_sensor_data():
@@ -29,37 +24,23 @@ dados_sensores = {
 #         "nonCadenceTotalTime": ...    # em segundos
 #     })
 
-# @app.route("/sensores")
-# def sensores():
-#     with status_lock:
-#         print("Acessando /sensores")
-#         if not latest_status:
-#             return jsonify({"message": "Aguardando dados do sensor..."})
-#         return jsonify(latest_status)
+@app.route("/sensores")
+def sensores():
+    with status_lock:
+        print("Acessando /sensores")
+        if not latest_status:
+            return jsonify({"message": "Aguardando dados do sensor..."})
+        return jsonify(latest_status)
 
 latest_status = {}
 status_lock = threading.Lock()
 
-# def on_message(client, userdata, msg):
-#     global latest_status
-#     if msg.topic == "machine/status":
-#         latest_status = json.loads(msg.payload.decode())
-#         print("Mensagem recebida via MQTT:", latest_status)
-
-# Atualiza ao receber via MQTT
 def on_message(client, userdata, msg):
-    global dados_sensores
-    payload = json.loads(msg.payload.decode())
-    print("Mensagem recebida via MQTT:", payload)
-    dados_sensores = payload
+    global latest_status
+    if msg.topic == "machine/status":
+        latest_status = json.loads(msg.payload.decode())
+        print("Mensagem recebida via MQTT:", latest_status)
 
-
-    # Rota que entrega os dados pro front
-@app.route("/sensores", methods=["GET"])
-def get_sensor_data():
-    if dados_sensores["lowSignalCount"] is None:
-        return jsonify({"message": "Aguardando dados do sensor..."})
-    return jsonify(dados_sensores)
 
 def mqtt_thread():
     print("Iniciando conexão MQTT...")
