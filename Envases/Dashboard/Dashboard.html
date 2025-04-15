@@ -90,20 +90,25 @@
 
 
 <script>
-    // Substituí o IP do ESP8266 aqui
-    const backendURL = "https://iotenvases.onrender.com/sensores";
-    console.log(" Script carregado!");
+   // Substituí o IP do ESP8266 aqui
+const backendURL = "https://iotenvases.onrender.com/sensores";
+console.log("Script carregado!");
 
-    function formatarTempo(segundos) {
-        const minutos = Math.floor(segundos / 60);
-        const restoSegundos = segundos % 60;
-        const segundosFormatado = restoSegundos.toString().padStart(2, '0');
-        return `${minutos}m ${segundosFormatado}s`;
-    }
+function formatarTempo(segundos) {
+    const minutos = Math.floor(segundos / 60);
+    const restoSegundos = segundos % 60;
+    const segundosFormatado = restoSegundos.toString().padStart(2, '0');
+    return `${minutos}m ${segundosFormatado}s`;
+}
 
+// Variável para controlar se uma requisição está em andamento
+let emRequisicao = false;
 
 // Função para buscar os dados do backend
 async function fetchSensorData() {
+    if (emRequisicao) return; // Evita fazer uma nova requisição se já houver uma em andamento
+    emRequisicao = true;
+
     try {
         const response = await fetch(backendURL);
         if (!response.ok) {
@@ -130,11 +135,14 @@ async function fetchSensorData() {
         document.getElementById("lowCount").textContent = "Erro ao exibir";
         document.getElementById("maqProduzindo").textContent = "Erro ao exibir";
         document.getElementById("maqParada").textContent = "Erro ao exibir";
+    } finally {
+        emRequisicao = false; // Permite que novas requisições sejam feitas após a finalização
     }
 }
 
 // Atualiza os dados a cada 2 segundos
 setInterval(fetchSensorData, 2000);
+
 </script>
 
 
