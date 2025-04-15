@@ -33,7 +33,7 @@ def sensores():
         print("Acessando /sensores")
         # if not latest_status:
         #     return jsonify({"message": "Aguardando dados do sensor..."})
-        on_message()
+        # on_message()
         # Aqui, você pode mapear os dados para os formatos esperados pelo frontend
         sensor_data = {
             "lowSignalCount": latest_status.get("lowSignalCount", ),
