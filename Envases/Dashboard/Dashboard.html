@@ -102,13 +102,6 @@
     const backendURL = "https://iotenvases.onrender.com/sensores";
     console.log(" Script carregado!");
 
-   // Função para formatar o tempo
-function formatarTempo(segundos) {
-    const minutos = Math.floor(segundos / 60);
-    const restoSegundos = segundos % 60;
-    const segundosFormatado = restoSegundos.toString().padStart(2, '0');
-    return `${minutos}m ${segundosFormatado}s`;
-}
 
 // Função para buscar os dados do backend
 async function fetchSensorData() {
