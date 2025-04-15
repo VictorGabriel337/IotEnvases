@@ -98,51 +98,136 @@
 
 </script>
 <script>
-    // Substituí o IP do ESP8266 aqui
-    const backendURL = "https://iotenvases.onrender.com/sensores";
-    console.log(" Script carregado!");
+   // Configurações
+const backendURL = "https://iotenvases.onrender.com/sensores"; // Substitua pelo seu URL
+const updateInterval = 2000; // 2 segundos
+let isLoading = false;
 
+// Elementos da UI
+const elements = {
+    lowCount: document.getElementById("lowCount"),
+    maqProduzindo: document.getElementById("maqProduzindo"),
+    maqParada: document.getElementById("maqParada"),
+    statusIndicator: document.createElement("div") // Criando elemento de status
+};
 
-// Função para buscar os dados do backend
-async function fetchSensorData() {
-    try {
-        const response = await fetch(backendURL);
-        if (!response.ok) {
-            throw new Error("Erro na resposta do servidor");
-        }
-        const data = await response.json();
-        console.log("Dados recebidos:", data); // Log para verificar os dados
+// Adiciona o indicador de status ao DOM
+elements.statusIndicator.className = "status-indicator";
+document.body.appendChild(elements.statusIndicator);
 
-        // Verificar se 'message' está presente nos dados
-        if (data.message) {
-            document.getElementById("lowCount").textContent = data.message;
-            document.getElementById("maqProduzindo").textContent = data.message;
-            document.getElementById("maqParada").textContent = data.message;
-        } else {
-            // Caso contrário, continuar tratando os dados conforme esperado
-            if (data.lowSignalCount !== undefined) {
-                document.getElementById("lowCount").textContent = ` ${data.lowSignalCount}`;
-            }
+// Função para formatar o tempo (MM:SS)
+function formatarTempo(segundos) {
+    if (isNaN(segundos)) return "0m 00s";
+    const minutos = Math.floor(segundos / 60);
+    const segs = segundos % 60;
+    return `${minutos}m ${segs.toString().padStart(2, '0')}s`;
+}
 
-            if (data.cadenceTotalTime !== undefined) {
-                document.getElementById("maqProduzindo").textContent = ` ${formatarTempo(data.cadenceTotalTime)}`;
-            }
-
-            if (data.nonCadenceTotalTime !== undefined) {
-                document.getElementById("maqParada").textContent = ` ${formatarTempo(data.nonCadenceTotalTime)}`;
-            }
-        }
-
-    } catch (error) {
-        console.error("Erro ao buscar os dados:", error);
-        document.getElementById("lowCount").textContent = "Erro ao exibir";
-        document.getElementById("maqProduzindo").textContent = "Erro ao exibir";
-        document.getElementById("maqParada").textContent = "Erro ao exibir";
+// Atualiza a UI com os dados recebidos
+function updateUI(data) {
+    console.log("Atualizando UI com:", data);
+    
+    // Verifica se os dados são válidos
+    const isValidData = data && 
+                      data.lowSignalCount !== undefined && 
+                      data.cadenceTotalTime !== undefined && 
+                      data.nonCadenceTotalTime !== undefined;
+    
+    if (isValidData) {
+        elements.lowCount.textContent = data.lowSignalCount;
+        elements.maqProduzindo.textContent = formatarTempo(data.cadenceTotalTime);
+        elements.maqParada.textContent = formatarTempo(data.nonCadenceTotalTime);
+        
+        // Atualiza o status
+        updateStatusIndicator("success", "Dados atualizados");
+        
+        // Animação de atualização
+        animateElements();
+    } else {
+        updateStatusIndicator("warning", "Dados parciais recebidos");
     }
 }
 
-// Atualiza os dados a cada 2 segundos
-setInterval(fetchSensorData, 2000);
+// Animação dos elementos
+function animateElements() {
+    const elementsToAnimate = [elements.lowCount, elements.maqProduzindo, elements.maqParada];
+    
+    elementsToAnimate.forEach(el => {
+        el.classList.add('updated');
+        setTimeout(() => el.classList.remove('updated'), 500);
+    });
+}
+
+// Atualiza o indicador de status
+function updateStatusIndicator(type, message) {
+    elements.statusIndicator.textContent = message;
+    elements.statusIndicator.className = `status-indicator ${type}`;
+    
+    // Remove o status após 3 segundos
+    setTimeout(() => {
+        elements.statusIndicator.textContent = "";
+        elements.statusIndicator.className = "status-indicator";
+    }, 3000);
+}
+
+// Busca dados do backend
+async function fetchSensorData() {
+    if (isLoading || !navigator.onLine) return;
+    isLoading = true;
+    
+    try {
+        updateStatusIndicator("info", "Atualizando dados...");
+        
+        const timestamp = Date.now(); // Para evitar cache
+        const response = await fetch(`${backendURL}?t=${timestamp}`);
+        
+        if (!response.ok) {
+            throw new Error(`Erro HTTP: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        console.log("Dados recebidos:", data);
+        
+        updateUI(data);
+    } catch (error) {
+        console.error("Erro ao buscar dados:", error);
+        updateStatusIndicator("error", "Erro ao carregar dados");
+        
+        // Mostra valores padrão em caso de erro
+        elements.lowCount.textContent = "---";
+        elements.maqProduzindo.textContent = "---";
+        elements.maqParada.textContent = "---";
+    } finally {
+        isLoading = false;
+    }
+}
+
+// Verifica conexão periodicamente
+function checkConnection() {
+    if (!navigator.onLine) {
+        updateStatusIndicator("error", "Sem conexão com a internet");
+    }
+}
+
+// Inicialização
+function init() {
+    console.log("Inicializando dashboard...");
+    
+    // Carrega os dados imediatamente
+    fetchSensorData();
+    
+    // Configura atualização periódica
+    setInterval(fetchSensorData, updateInterval);
+    
+    // Verifica conexão a cada 5 segundos
+    setInterval(checkConnection, 5000);
+    
+    // Evento para recarregar quando a conexão voltar
+    window.addEventListener('online', fetchSensorData);
+}
+
+// Inicia quando o DOM estiver carregado
+document.addEventListener('DOMContentLoaded', init);
 </script>
 
 
