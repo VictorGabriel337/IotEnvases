@@ -29,8 +29,8 @@ def sensores():
     with status_lock:
         print("Acessando /sensores")
         if not latest_status:
-        #     return jsonify({"message": "Aguardando dados do sensor..."})
-        # return jsonify(latest_status)
+            return jsonify({"message": "Aguardando dados do sensor..."})
+        return jsonify(latest_status)
 
 latest_status = {}
 status_lock = threading.Lock()
