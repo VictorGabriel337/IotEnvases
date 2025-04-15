@@ -90,16 +90,10 @@
 
 
 <script>
-    // Substituí o IP do ESP8266 aqui
-const backendURL = "https://iotenvases.onrender.com/sensores";
-console.log("Script carregado!");
+     // Substituí o IP do ESP8266 aqui
+     const backendURL = "https://iotenvases.onrender.com/sensores";
+    console.log(" Script carregado!");
 
-function formatarTempo(segundos) {
-    const minutos = Math.floor(segundos / 60);
-    const restoSegundos = segundos % 60;
-    const segundosFormatado = restoSegundos.toString().padStart(2, '0');
-    return `${minutos}m ${segundosFormatado}s`;
-}
 
 // Função para buscar os dados do backend
 async function fetchSensorData() {
@@ -109,24 +103,30 @@ async function fetchSensorData() {
             throw new Error("Erro na resposta do servidor");
         }
         const data = await response.json();
-        console.log("Dados recebidos:", data);
+        console.log("Dados recebidos:", data); // Log para verificar os dados
 
-        // Atualizando a interface com os dados recebidos
-        if (data.lowSignalCount !== undefined) {
-            document.getElementById("lowCount").textContent = data.lowSignalCount;
-        }
+        // Verificar se 'message' está presente nos dados
+        if (data.message) {
+            document.getElementById("lowCount").textContent = data.message;
+            document.getElementById("maqProduzindo").textContent = data.message;
+            document.getElementById("maqParada").textContent = data.message;
+        } else {
+            // Caso contrário, continuar tratando os dados conforme esperado
+            if (data.lowSignalCount !== undefined) {
+                document.getElementById("lowCount").textContent = ` ${data.lowSignalCount}`;
+            }
 
-        if (data.cadenceTotalTime !== undefined) {
-            document.getElementById("maqProduzindo").textContent = formatarTempo(data.cadenceTotalTime);
-        }
+            if (data.cadenceTotalTime !== undefined) {
+                document.getElementById("maqProduzindo").textContent = ` ${formatarTempo(data.cadenceTotalTime)}`;
+            }
 
-        if (data.nonCadenceTotalTime !== undefined) {
-            document.getElementById("maqParada").textContent = formatarTempo(data.nonCadenceTotalTime);
+            if (data.nonCadenceTotalTime !== undefined) {
+                document.getElementById("maqParada").textContent = ` ${formatarTempo(data.nonCadenceTotalTime)}`;
+            }
         }
 
     } catch (error) {
         console.error("Erro ao buscar os dados:", error);
-        // Exibindo mensagem de erro no frontend caso haja falha na requisição
         document.getElementById("lowCount").textContent = "Erro ao exibir";
         document.getElementById("maqProduzindo").textContent = "Erro ao exibir";
         document.getElementById("maqParada").textContent = "Erro ao exibir";
@@ -135,8 +135,8 @@ async function fetchSensorData() {
 
 // Atualiza os dados a cada 2 segundos
 setInterval(fetchSensorData, 2000);
-
 </script>
+
 
 
 
