@@ -14,25 +14,25 @@ def home():
     return send_from_directory(os.path.join(app.root_path, 'Envases', 'Dashboard'), 'Dashboard.html')
 
 
-# @app.route("/sensores", methods=["GET"])
-# def get_sensor_data():
-#     # Aqui você pode conectar com MQTT, banco de dados ou variáveis mockadas
-#     # Por enquanto vamos usar valores simulados (só pra teste)
-#     return jsonify({
-#         "lowSignalCount": ...,
-#         "cadenceTotalTime": ...,       # em segundos
-#         "nonCadenceTotalTime": ...    # em segundos
-#     })
+@app.route("/sensores", methods=["GET"])
+def get_sensor_data():
+    # Aqui você pode conectar com MQTT, banco de dados ou variáveis mockadas
+    # Por enquanto vamos usar valores simulados (só pra teste)
+    return jsonify({
+        "lowSignalCount": ...,
+        "cadenceTotalTime": ...,       # em segundos
+        "nonCadenceTotalTime": ...    # em segundos
+    })
 
-@app.route("/sensores")
-def sensores():
-    with status_lock:
-        print("Acessando /sensores")
-        if not latest_status:
-            return jsonify({"message": "Aguardando dados do sensor..."})
-        return jsonify(latest_status)
+# @app.route("/sensores")
+# def sensores():
+#     with status_lock:
+#         print("Acessando /sensores")
+#         if not latest_status:
+#             return jsonify({"message": "Aguardando dados do sensor..."})
+#         return jsonify(latest_status)
 
-latest_status = {}
+# latest_status = {}
 status_lock = threading.Lock()
 
 def on_message(client, userdata, msg):
