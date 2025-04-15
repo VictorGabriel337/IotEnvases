@@ -98,51 +98,27 @@
 
 </script>
 <script>
-    // Substituí o IP do ESP8266 aqui
-    const backendURL = "https://iotenvases.onrender.com/sensores";
-    console.log(" Script carregado!");
-
-
-// Função para buscar os dados do backend
-async function fetchSensorData() {
+   // Função para buscar os dados do backend e atualizar o dashboard
+async function atualizarDashboard() {
     try {
-        const response = await fetch(backendURL);
+        const response = await fetch('/sensores');
         if (!response.ok) {
-            throw new Error("Erro na resposta do servidor");
+            throw new Error(`Erro na requisição: ${response.status}`);
         }
         const data = await response.json();
-        console.log("Dados recebidos:", data); // Log para verificar os dados
 
-        // Verificar se 'message' está presente nos dados
-        if (data.message) {
-            document.getElementById("lowCount").textContent = data.message;
-            document.getElementById("maqProduzindo").textContent = data.message;
-            document.getElementById("maqParada").textContent = data.message;
-        } else {
-            // Caso contrário, continuar tratando os dados conforme esperado
-            if (data.lowSignalCount !== undefined) {
-                document.getElementById("lowCount").textContent = ` ${data.lowSignalCount}`;
-            }
-
-            if (data.cadenceTotalTime !== undefined) {
-                document.getElementById("maqProduzindo").textContent = ` ${formatarTempo(data.cadenceTotalTime)}`;
-            }
-
-            if (data.nonCadenceTotalTime !== undefined) {
-                document.getElementById("maqParada").textContent = ` ${formatarTempo(data.nonCadenceTotalTime)}`;
-            }
-        }
-
+        // Atualiza os elementos do dashboard com os dados recebidos
+        document.getElementById('lowCount').textContent = data.lowSignalCount;
+        document.getElementById('maqParada').textContent = formatarTempo(data.nonCadenceTotalTime);
+        document.getElementById('maqProduzindo').textContent = formatarTempo(data.cadenceTotalTime);
     } catch (error) {
-        console.error("Erro ao buscar os dados:", error);
-        document.getElementById("lowCount").textContent = "Erro ao exibir";
-        document.getElementById("maqProduzindo").textContent = "Erro ao exibir";
-        document.getElementById("maqParada").textContent = "Erro ao exibir";
+        console.error('Erro ao atualizar o dashboard:', error);
     }
 }
 
-// Atualiza os dados a cada 2 segundos
-setInterval(fetchSensorData, 2000);
+// Chama a função inicialmente e configura para atualizar a cada 5 segundos
+atualizarDashboard();
+setInterval(atualizarDashboard, 5000);
 </script>
 
 
