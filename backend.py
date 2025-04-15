@@ -29,8 +29,8 @@ def sensores():
     with status_lock:
         print("Acessando /sensores")
         if not latest_status:
-            return jsonify({"message": "Aguardando dados do sensor..."})
-        return jsonify(latest_status)
+        #     return jsonify({"message": "Aguardando dados do sensor..."})
+        # return jsonify(latest_status)
 
 latest_status = {}
 status_lock = threading.Lock()
@@ -56,11 +56,7 @@ threading.Thread(target=mqtt_thread).start()
 
 @app.route("/status", methods=["GET"])
 def get_status():
-    with status_lock:
-        if latest_status:
-            return jsonify(latest_status)
-        else:
-            return jsonify({"message": "Aguardando dados do sensor..."}), 404
+    return jsonify(latest_status)
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
