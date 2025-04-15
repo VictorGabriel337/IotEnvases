@@ -197,3 +197,60 @@ margin-left: 0px;
     top:10px;
     left: 50px;
 }
+
+
+
+
+
+/* deepseek */
+/* Estilos para os elementos de dados */
+.sensor-value {
+    font-size: 1.2rem;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    margin: 0.5rem 0;
+    padding: 0.5rem;
+    border-radius: 4px;
+    background-color: #f8f9fa;
+}
+
+.sensor-value.updated {
+    background-color: rgba(40, 167, 69, 0.2);
+    transform: scale(1.02);
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+/* Indicador de status */
+.status-indicator {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 10px 15px;
+    border-radius: 4px;
+    color: white;
+    font-size: 0.9rem;
+    z-index: 1000;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.status-indicator.success {
+    background-color: #28a745;
+    opacity: 1;
+}
+
+.status-indicator.error {
+    background-color: #dc3545;
+    opacity: 1;
+}
+
+.status-indicator.warning {
+    background-color: #ffc107;
+    color: #212529;
+    opacity: 1;
+}
+
+.status-indicator.info {
+    background-color: #17a2b8;
+    opacity: 1;
+}
