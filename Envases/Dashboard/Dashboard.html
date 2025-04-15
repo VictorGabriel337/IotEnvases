@@ -114,10 +114,11 @@ async function fetchSensorData() {
         console.log("Dados recebidos:", data); // Log para verificar os dados
 
         // Verificar se 'message' está presente nos dados
-        if (data.message) {
-            document.getElementById("lowCount").textContent = data.message;
-            document.getElementById("maqProduzindo").textContent = data.message;
-            document.getElementById("maqParada").textContent = data.message;
+        if (data.message === "Aguardando dados do sensor...") {
+    document.getElementById("lowCount").textContent = "Aguardando dados...";
+    document.getElementById("maqProduzindo").textContent = "Aguardando dados...";
+    document.getElementById("maqParada").textContent = "Aguardando dados...";
+
         } else {
             // Caso contrário, continuar tratando os dados conforme esperado
             if (data.lowSignalCount !== undefined) {
