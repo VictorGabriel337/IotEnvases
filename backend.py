@@ -1,4 +1,4 @@
-from flask import Flask, jsonify ,send_from_directory
+from flask import Flask, jsonify, send_from_directory
 from flask_cors import CORS
 import paho.mqtt.client as mqtt
 import threading
@@ -8,29 +8,26 @@ import os
 app = Flask(__name__)
 CORS(app)  # Libera o CORS para todas as rotas e origens
 
-
 @app.route("/")
 def home():
     return send_from_directory(os.path.join(app.root_path, 'Envases', 'Dashboard'), 'Dashboard.html')
 
 
-# @app.route("/sensores", methods=["GET"])
-# def get_sensor_data():
-#     # Aqui você pode conectar com MQTT, banco de dados ou variáveis mockadas
-#     # Por enquanto vamos usar valores simulados (só pra teste)
-#     return jsonify({
-#         "lowSignalCount": ...,
-#         "cadenceTotalTime": ...,       # em segundos
-#         "nonCadenceTotalTime": ...    # em segundos
-#     })
-
+# Atualiza a rota /sensores para retornar os dados corretamente
 @app.route("/sensores")
 def sensores():
     with status_lock:
         print("Acessando /sensores")
         if not latest_status:
             return jsonify({"message": "Aguardando dados do sensor..."})
-        return jsonify(latest_status)
+        
+        # Aqui, você pode mapear os dados para os formatos esperados pelo frontend
+        sensor_data = {
+            "lowSignalCount": latest_status.get("lowSignalCount", 0),
+            "cadenceTotalTime": latest_status.get("cadenceTotalTime", 0),  # em segundos
+            "nonCadenceTotalTime": latest_status.get("nonCadenceTotalTime", 0)  # em segundos
+        }
+        return jsonify(sensor_data)
 
 latest_status = {}
 status_lock = threading.Lock()
@@ -52,6 +49,7 @@ def mqtt_thread():
     mqtt_client.on_message = on_message
     mqtt_client.loop_forever()
 
+# Inicia o thread MQTT
 threading.Thread(target=mqtt_thread).start()
 
 @app.route("/status", methods=["GET"])
