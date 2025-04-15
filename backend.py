@@ -6,7 +6,7 @@ import json
 import os
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "*"}})  # Libera o CORS para todas as rotas e origens
+CORS(app, resources={r"/*": {"origins": "https://iotenvases.netlify.app"}})  # Libera o CORS para todas as rotas e origens
 
 
 @app.route("/")
@@ -28,8 +28,8 @@ def home():
 def sensores():
     with status_lock:
         print("Acessando /sensores")
-        if not latest_status:
-            return jsonify({"message": "Aguardando dados do sensor..."})
+        # if not latest_status:
+        #     return jsonify({"message": "Aguardando dados do sensor..."})
         
         # Aqui, você pode mapear os dados para os formatos esperados pelo frontend
         sensor_data = {
