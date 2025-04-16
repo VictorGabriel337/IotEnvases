@@ -63,11 +63,11 @@ def sensores():
         # Aqui, você pode mapear os dados para os formatos esperados pelo frontend
         sensor_data = {
             
-            "lowSignalCount": latest_status.get("lowSignalCount", ),
-            "cadenceTotalTime": latest_status.get("cadenceTotalTime", ),  # em segundos
-            "nonCadenceTotalTime": latest_status.get("nonCadenceTotalTime",)  # em segundos
+            # "lowSignalCount": latest_status.get("lowSignalCount", ),
+            # "cadenceTotalTime": latest_status.get("cadenceTotalTime", ),  # em segundos
+            # "nonCadenceTotalTime": latest_status.get("nonCadenceTotalTime",)  # em segundos
         }
-        return jsonify(sensor_data)
+        return jsonify(latest_status)
 
 
 
