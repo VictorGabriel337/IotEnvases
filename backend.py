@@ -71,7 +71,7 @@ def get_status():
 @app.route("/sensores")
 def sensores():
 
-    with status_lock:
+    # with status_lock:
         print("Acessando /sensores")
         # if not latest_status:
         #     return jsonify({"message": "Aguardando dados do sensor..."})
