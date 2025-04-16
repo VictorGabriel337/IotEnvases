@@ -24,23 +24,23 @@ def home():
 #         "nonCadenceTotalTime": ...    # em segundos
 #     })
 
-# @app.route("/sensores")
-# def sensores():
+@app.route("/sensores")
+def sensores():
 
 
 
-#     with status_lock:
-#         print("Acessando /sensores")
-#         # if not latest_status:
-#         #     return jsonify({"message": "Aguardando dados do sensor..."})
-#         on_message()
-#         # Aqui, você pode mapear os dados para os formatos esperados pelo frontend
-#         sensor_data = {
-#             "lowSignalCount": latest_status.get("lowSignalCount", ),
-#             "cadenceTotalTime": latest_status.get("cadenceTotalTime", ),  # em segundos
-#             "nonCadenceTotalTime": latest_status.get("nonCadenceTotalTime",)  # em segundos
-#         }
-#         return jsonify(sensor_data)
+    with status_lock:
+        print("Acessando /sensores")
+        # if not latest_status:
+        #     return jsonify({"message": "Aguardando dados do sensor..."})
+        on_message()
+        # Aqui, você pode mapear os dados para os formatos esperados pelo frontend
+        sensor_data = {
+            "lowSignalCount": latest_status.get("lowSignalCount", ),
+            "cadenceTotalTime": latest_status.get("cadenceTotalTime", ),  # em segundos
+            "nonCadenceTotalTime": latest_status.get("nonCadenceTotalTime",)  # em segundos
+        }
+        return jsonify(sensor_data)
 
 latest_status = {}
 status_lock = threading.Lock()
@@ -68,21 +68,6 @@ threading.Thread(target=mqtt_thread).start()
 def get_status():
     return jsonify(latest_status)
 
-@app.route("/sensores")
-def sensores():
-
-    # with status_lock:
-    print("Acessando /sensores")
-        # if not latest_status:
-        #     return jsonify({"message": "Aguardando dados do sensor..."})
-    on_message()
-        # Aqui, você pode mapear os dados para os formatos esperados pelo frontend
-    sensor_data = {
-        "lowSignalCount": latest_status.get("lowSignalCount", ),
-        "cadenceTotalTime": latest_status.get("cadenceTotalTime", ),  # em segundos
-        "nonCadenceTotalTime": latest_status.get("nonCadenceTotalTime",)  # em segundos
-        }
-    return jsonify(sensor_data)
 
 
 if __name__ == "__main__":
