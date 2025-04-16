@@ -61,7 +61,6 @@ def sensores():
         #     return jsonify({"message": "Aguardando dados do sensor..."})
         # on_message()
         # Aqui, você pode mapear os dados para os formatos esperados pelo frontend
-        latest_status = json.loads(msg.payload.decode())
         sensor_data = {
             
             "lowSignalCount": latest_status.get("lowSignalCount", ),
