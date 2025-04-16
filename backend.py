@@ -71,8 +71,6 @@ def get_status():
 @app.route("/sensores")
 def sensores():
 
-
-
     with status_lock:
         print("Acessando /sensores")
         # if not latest_status:
