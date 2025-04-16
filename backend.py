@@ -24,10 +24,36 @@ def home():
 #         "nonCadenceTotalTime": ...    # em segundos
 #     })
 
+# @app.route("/sensores")
+# def sensores():
+
+#     with status_lock:
+#         print("Acessando /sensores")
+#         # if not latest_status:
+#         #     return jsonify({"message": "Aguardando dados do sensor..."})
+#         # on_message()
+#         # Aqui, você pode mapear os dados para os formatos esperados pelo frontend
+#         latest_status = json.loads(msg.payload.decode())
+#         sensor_data = {
+            
+#             "lowSignalCount": latest_status.get("lowSignalCount", ),
+#             "cadenceTotalTime": latest_status.get("cadenceTotalTime", ),  # em segundos
+#             "nonCadenceTotalTime": latest_status.get("nonCadenceTotalTime",)  # em segundos
+#         }
+#         return jsonify(sensor_data)
+
+latest_status = {}
+status_lock = threading.Lock()
+
+def on_message(client, userdata, msg):
+    global latest_status
+    if msg.topic == "machine/status":
+        latest_status = json.loads(msg.payload.decode())
+        print("Mensagem recebida via MQTT:", latest_status)
+
+
 @app.route("/sensores")
 def sensores():
-
-
 
     with status_lock:
         print("Acessando /sensores")
@@ -44,14 +70,8 @@ def sensores():
         }
         return jsonify(sensor_data)
 
-latest_status = {}
-status_lock = threading.Lock()
 
-def on_message(client, userdata, msg):
-    global latest_status
-    if msg.topic == "machine/status":
-        latest_status = json.loads(msg.payload.decode())
-        print("Mensagem recebida via MQTT:", latest_status)
+
 
 
 def mqtt_thread():
