@@ -67,7 +67,9 @@ def sensores():
             # "cadenceTotalTime": latest_status.get("cadenceTotalTime", ),  # em segundos
             # "nonCadenceTotalTime": latest_status.get("nonCadenceTotalTime",)  # em segundos
         }
+        print("Mensagem latest:", latest_status)
         return jsonify(latest_status)
+    
 
 
 
