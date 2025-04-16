@@ -42,7 +42,7 @@ def home():
 #         }
 #         return jsonify(sensor_data)
 
-latest_status = {}
+latest_status
 status_lock = threading.Lock()
 
 def on_message(client, userdata, msg):
