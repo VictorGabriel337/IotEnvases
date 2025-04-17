@@ -46,12 +46,14 @@ latest_status = {}
 status_lock = threading.Lock()
 
 def on_message(client, userdata, msg):
- global latest_status
-print("Mensagem MQTT recebida em tópico:", msg.topic)
-print("Payload recebido:", msg.payload.decode())
-if msg.topic == "machine/status":
+    global latest_status
+    print("Mensagem MQTT recebida em tópico:", msg.topic)
+    print("Payload recebido:", msg.payload.decode())
+
+    if msg.topic == "machine/status":
         latest_status = json.loads(msg.payload.decode())
         print("latest_status atualizado:", latest_status)
+
 
 
 @app.route("/sensores")
