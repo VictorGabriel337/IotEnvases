@@ -42,7 +42,7 @@ def home():
 #         }
 #         return jsonify(sensor_data)
 
-latest_status
+latest_status = {}
 status_lock = threading.Lock()
 
 def on_message(client, userdata, msg):
@@ -66,9 +66,10 @@ def sensores():
             # "lowSignalCount": latest_status.get("lowSignalCount", ),
             # "cadenceTotalTime": latest_status.get("cadenceTotalTime", ),  # em segundos
             # "nonCadenceTotalTime": latest_status.get("nonCadenceTotalTime",)  # em segundos
-        }
+        }   
         print("Mensagem latest:", latest_status)
         return jsonify(latest_status)
+    
     
 
 
