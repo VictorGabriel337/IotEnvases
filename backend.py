@@ -88,9 +88,9 @@ def mqtt_thread():
 
 threading.Thread(target=mqtt_thread).start()
 
-# @app.route("/status", methods=["GET"])
-# def get_status():
-#     return jsonify(latest_status)
+@app.route("/status", methods=["GET"])
+def get_status():
+    return jsonify(latest_status)
 
 
 
