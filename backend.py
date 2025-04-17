@@ -47,6 +47,7 @@ status_lock = threading.Lock()
 
 def on_message(client, userdata, msg):
     global latest_status
+    print("Callback on_message chamado!")
     print("Mensagem MQTT recebida em tópico:", msg.topic)
     print("Payload recebido:", msg.payload.decode())
 
