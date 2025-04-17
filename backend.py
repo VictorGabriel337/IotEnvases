@@ -57,7 +57,7 @@ def on_message(client, userdata, msg):
 
 
 
-@app.route("/sensores")
+@app.route("/sensores" , methods=["GET"])
 def sensores():
     with status_lock:
         print("GET /sensores chamado")
