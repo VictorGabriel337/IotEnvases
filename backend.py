@@ -43,7 +43,7 @@ def home():
 #         return jsonify(sensor_data)
 
 latest_status = {}
-status_lock = threading.Lock()
+# status_lock = threading.Lock()
 
 def on_message(client, userdata, msg):
     global latest_status
@@ -57,14 +57,14 @@ def on_message(client, userdata, msg):
 
 
 
-@app.route("/sensores")
-def sensores():
-    with status_lock:
-        print("GET /sensores chamado")
-        print("Conteúdo de latest_status:", latest_status)
-        # if not latest_status:
-        #     return jsonify({"message": "Aguardando dados do sensor..."})
-        return jsonify(latest_status)
+# @app.route("/sensores")
+# def sensores():
+#     with status_lock:
+#         print("GET /sensores chamado")
+#         print("Conteúdo de latest_status:", latest_status)
+#         # if not latest_status:
+#         #     return jsonify({"message": "Aguardando dados do sensor..."})
+#         return jsonify(latest_status)
     
     
 
@@ -84,9 +84,9 @@ def mqtt_thread():
 
 threading.Thread(target=mqtt_thread).start()
 
-@app.route("/status", methods=["GET"])
-def get_status():
-    return jsonify(latest_status)
+# @app.route("/status", methods=["GET"])
+# def get_status():
+#     return jsonify(latest_status)
 
 
 
