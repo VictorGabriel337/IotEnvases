@@ -46,28 +46,21 @@ latest_status = {}
 status_lock = threading.Lock()
 
 def on_message(client, userdata, msg):
-    global latest_status
-    if msg.topic == "machine/status":
+ global latest_status
+print("Mensagem MQTT recebida em tópico:", msg.topic)
+print("Payload recebido:", msg.payload.decode())
+if msg.topic == "machine/status":
         latest_status = json.loads(msg.payload.decode())
-        print("Mensagem recebida via MQTT:", latest_status)
+        print("latest_status atualizado:", latest_status)
 
 
 @app.route("/sensores")
 def sensores():
-
     with status_lock:
-        print("Acessando /sensores")
-        # if not latest_status:
-        #     return jsonify({"message": "Aguardando dados do sensor..."})
-        # on_message()
-        # Aqui, você pode mapear os dados para os formatos esperados pelo frontend
-        sensor_data = {
-            
-            # "lowSignalCount": latest_status.get("lowSignalCount", ),
-            # "cadenceTotalTime": latest_status.get("cadenceTotalTime", ),  # em segundos
-            # "nonCadenceTotalTime": latest_status.get("nonCadenceTotalTime",)  # em segundos
-        }   
-        print("Mensagem latest:", latest_status)
+        print("GET /sensores chamado")
+        print("Conteúdo de latest_status:", latest_status)
+        if not latest_status:
+            return jsonify({"message": "Aguardando dados do sensor..."})
         return jsonify(latest_status)
     
     
