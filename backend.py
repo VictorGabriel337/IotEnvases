@@ -32,7 +32,7 @@ def sensores():
         print("GET /sensores chamado. Conteúdo de latest_status:", latest_status)
         if not latest_status or not all(key in latest_status for key in ["lowSignalCount", "cadenceTotalTime", "nonCadenceTotalTime"]):
             print("Dados incompletos ou não disponíveis.")
-            return jsonify({"message": "Dados não disponíveis"}), 204  # Retorna 204 No Content
+            return jsonify({"message": "Dados não disponíveis"}), 204  # Retorna JSON vazio com status 204
         print("Dados sendo enviados:", latest_status)
         return jsonify(latest_status)
 
