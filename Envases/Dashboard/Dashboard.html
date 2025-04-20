@@ -111,22 +111,23 @@ function formatarTempo(segundos) {
 
 async function fetchSensorData() {
     try {
-        console.log("Chamando backend /sensores...");
+        console.log("🔍 Buscando dados em:", backendURL);
         
         const response = await fetch(backendURL);
         if (!response.ok) {
+            console.warn("⚠️ Resposta do servidor NÃO está ok:", response.status);
             throw new Error("Erro na resposta do servidor");
         }
         const data = await response.json();
         console.log("Dados recebidos:", data);
 
-        // Verifica se o backend ainda está sem dados
-        if (data.message === "Dados não disponíveis") {
+        // Atualiza os valores na página
+        if (data.message && data.message === "Dados não disponíveis") {
             console.log("⏳ Dados ainda não chegaram. Esperando próxima tentativa...");
-            return; // sai da função e espera a próxima chamada automática
+            setTimeout(fetchSensorData, 2000); // tenta novamente após 2 segundos
+            return;
         }
 
-        // Atualiza os valores na página quando os dados existirem
         if (data.lowSignalCount !== undefined) {
             document.getElementById("lowCount").textContent = data.lowSignalCount;
         }
@@ -141,7 +142,6 @@ async function fetchSensorData() {
 
     } catch (error) {
         console.error("Erro ao buscar os dados:", error);
-        // Exibindo mensagem de erro no frontend caso haja falha na requisição
         document.getElementById("lowCount").textContent = "Erro ao exibir";
         document.getElementById("maqProduzindo").textContent = "Erro ao exibir";
         document.getElementById("maqParada").textContent = "Erro ao exibir";
