@@ -54,18 +54,20 @@ def on_message(client, userdata, msg):
     print("Payload recebido:", msg.payload.decode())
 
     if msg.topic == "machine/status":
-        latest_status = json.loads(msg.payload.decode())
-        print("latest_status atualizado:", latest_status)
+        try:
+            latest_status = json.loads(msg.payload.decode())
+            print("Dados de status atualizados:", latest_status)
+        except json.JSONDecodeError:
+            print("Erro ao decodificar JSON")
 
 
-
-@app.route("/sensores" , methods=["GET"])
+@app.route("/sensores", methods=["GET"])
 def sensores():
-    with status_lock:
+    with status_lock:  # Usando o lock para garantir que o acesso seja seguro
         print("GET /sensores chamado")
         print("Conteúdo de latest_status:", latest_status)
-        # if not latest_status:
-        #     return jsonify({"message": "Aguardando dados do sensor..."})
+        if not latest_status:
+            return jsonify({"message": "Dados não disponíveis"})
         return jsonify(latest_status)
     
     
