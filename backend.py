@@ -90,7 +90,6 @@ threading.Thread(target=mqtt_thread).start()
 # def get_status():
 #     return jsonify(latest_status)
 
-print("dados latest_status: ", latest_status)
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
