@@ -105,6 +105,7 @@ def sensores():
         time.sleep(0.5)  # espera 0.5s antes de tentar de novo
 
     return jsonify({"message": "Dados não disponíveis"})
+    print("status latest_status:", latest_status)
     
 
 
