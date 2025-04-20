@@ -64,17 +64,12 @@ def on_message(client, userdata, msg):
 
 @app.route("/sensores", methods=["GET"])
 def sensores():
-    start_time = time.time()
-    timeout = 10  # segundos
-
-    while time.time() - start_time < timeout:
-        with status_lock:
-            if latest_status and "lowSignalCount" in latest_status:
-                return jsonify(latest_status)
-        time.sleep(0.5)  # espera 0.5s antes de tentar de novo
-
-    return jsonify({"message": "Dados não disponíveis"})
-    print("status latest_status:", latest_status)
+    with status_lock:
+        print("GET /sensores chamado")
+        print("Conteúdo de latest_status:", latest_status)
+        if not latest_status or "lowSignalCount" not in latest_status:
+            return jsonify({"message": "Dados não disponíveis"})
+        return jsonify(latest_status)
     
     
 
