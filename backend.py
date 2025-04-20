@@ -9,7 +9,7 @@ from datetime import datetime
 import time
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "https://iotenvases.netlify.app"}})  # Libera o CORS para todas as rotas e origens
+CORS(app)
 
 
 @app.route("/")
