@@ -105,6 +105,9 @@ function formatarTempo(segundos) {
 // Função para buscar os dados do backend
 async function fetchSensorData() {
     try {
+
+        console.log("Chamando backend /sensores...");
+        
         const response = await fetch(backendURL);
         if (!response.ok) {
             throw new Error("Erro na resposta do servidor");
