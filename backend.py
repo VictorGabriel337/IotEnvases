@@ -53,7 +53,6 @@ def on_message(client, userdata, msg):
     print("Callback on_message chamado!")
     print("Mensagem MQTT recebida em tópico:", msg.topic)
     print("Payload recebido:", msg.payload.decode())
-    
 
     if msg.topic == "machine/status":
         try:
@@ -68,12 +67,8 @@ def sensores():
     with status_lock:
         print("GET /sensores chamado")
         print("Conteúdo de latest_status:", latest_status)
-        
-        # Verifique se o dado foi atualizado recentemente
         if not latest_status or "lowSignalCount" not in latest_status:
-            print("Aguardando dados do sensor... tentando novamente")
             return jsonify({"message": "Dados não disponíveis"})
-        
         return jsonify(latest_status)
     
     
