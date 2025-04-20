@@ -90,66 +90,53 @@
 
 
 <script>
-   const backendURL = "https://iotenvases.onrender.com/sensores";
+     // Substituí o IP do ESP8266 aqui
+     const backendURL = "https://iotenvases.onrender.com/sensores";
     console.log(" Script carregado!");
 
-    // Variáveis para armazenar os últimos dados recebidos
-    let lastLowSignalCount = "Carregando...";
-    let lastCadenceTotalTime = "Carregando...";
-    let lastNonCadenceTotalTime = "Carregando...";
 
-    function formatarTempo(segundos) {
-        const minutos = Math.floor(segundos / 60);
-        const restoSegundos = segundos % 60;
-        const segundosFormatado = restoSegundos.toString().padStart(2, '0');
-        return `${minutos}m ${segundosFormatado}s`;
-    }
+function formatarTempo(segundos) {
+    const minutos = Math.floor(segundos / 60);
+    const restoSegundos = segundos % 60;
+    const segundosFormatado = restoSegundos.toString().padStart(2, '0');
+    return `${minutos}m ${segundosFormatado}s`;
+}
 
-    async function fetchSensorData() {
-        try {
-            const response = await fetch(backendURL);
-            if (!response.ok) {
-                console.warn("⚠️ Erro na resposta do servidor:", response.status);
-                // Em caso de erro, mantemos os valores anteriores
-                document.getElementById("lowCount").textContent = lastLowSignalCount;
-                document.getElementById("maqProduzindo").textContent = lastCadenceTotalTime;
-                document.getElementById("maqParada").textContent = lastNonCadenceTotalTime;
-                return;
-            }
-            const data = await response.json();
-            console.log("Dados recebidos:", data);
-
-            // Verifica se os dados estão disponíveis e atualiza as variáveis e a tela
-            if (data && data.lowSignalCount !== undefined && data.cadenceTotalTime !== undefined && data.nonCadenceTotalTime !== undefined) {
-                lastLowSignalCount = data.lowSignalCount;
-                lastCadenceTotalTime = formatarTempo(data.cadenceTotalTime);
-                lastNonCadenceTotalTime = formatarTempo(data.nonCadenceTotalTime);
-
-                document.getElementById("lowCount").textContent = lastLowSignalCount;
-                document.getElementById("maqProduzindo").textContent = lastCadenceTotalTime;
-                document.getElementById("maqParada").textContent = lastNonCadenceTotalTime;
-            } else {
-                console.warn("⚠️ Dados incompletos recebidos do servidor. Mantendo valores anteriores.");
-                // Se os dados estiverem incompletos, mantemos os valores anteriores
-                document.getElementById("lowCount").textContent = lastLowSignalCount;
-                document.getElementById("maqProduzindo").textContent = lastCadenceTotalTime;
-                document.getElementById("maqParada").textContent = lastNonCadenceTotalTime;
-            }
-
-        } catch (error) {
-            console.error("Erro ao buscar os dados:", error);
-            // Em caso de erro na requisição, mantemos os valores anteriores
-            document.getElementById("lowCount").textContent = lastLowSignalCount;
-            document.getElementById("maqProduzindo").textContent = lastCadenceTotalTime;
-            document.getElementById("maqParada").textContent = lastNonCadenceTotalTime;
+// Função para buscar os dados do backend
+async function fetchSensorData() {
+    try {
+        const response = await fetch(backendURL);
+        if (!response.ok) {
+            throw new Error("Erro na resposta do servidor");
         }
+        const data = await response.json();
+        console.log("Dados recebidos:", data);
+
+        // Atualiza os valores na página
+        if (data.lowSignalCount !== undefined) {
+            document.getElementById("lowCount").textContent = data.lowSignalCount;
+        }
+
+        if (data.cadenceTotalTime !== undefined) {
+            document.getElementById("maqProduzindo").textContent = formatarTempo(data.cadenceTotalTime);
+        }
+
+        if (data.nonCadenceTotalTime !== undefined) {
+            document.getElementById("maqParada").textContent = formatarTempo(data.nonCadenceTotalTime);
+        }
+
+    } catch (error) {
+        console.error("Erro ao buscar os dados:", error);
+        // Exibindo mensagem de erro no frontend caso haja falha na requisição
+        document.getElementById("lowCount").textContent = "Erro ao exibir";
+        document.getElementById("maqProduzindo").textContent = "Erro ao exibir";
+        document.getElementById("maqParada").textContent = "Erro ao exibir";
     }
+}
 
-    // Atualiza os dados a cada 2 segundos
-    setInterval(fetchSensorData, 2000);
+// Atualiza os dados a cada 2 segundos
+setInterval(fetchSensorData, 2000);
 
-    // Chama a função uma vez no carregamento da página para iniciar a busca
-    fetchSensorData();
 </script>
 
 
