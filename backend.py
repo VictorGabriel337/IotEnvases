@@ -53,6 +53,7 @@ def on_message(client, userdata, msg):
     print("Callback on_message chamado!")
     print("Mensagem MQTT recebida em tópico:", msg.topic)
     print("Payload recebido:", msg.payload.decode())
+    
 
     if msg.topic == "machine/status":
         try:
