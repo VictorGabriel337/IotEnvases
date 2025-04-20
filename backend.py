@@ -1,50 +1,50 @@
-from flask import Flask, jsonify ,send_from_directory
+from flask import Flask, jsonify, send_from_directory
 from flask_cors import CORS
 import paho.mqtt.client as mqtt
 import threading
 import json
 import os
+import mysql.connector
+from datetime import datetime
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "https://iotenvases.netlify.app"}})  # Libera o CORS para todas as rotas e origens
-
-
-@app.route("/")
-def home():
-    return send_from_directory(os.path.join(app.root_path, 'Envases', 'Dashboard'), 'Dashboard.html')
-
-
-# @app.route("/sensores", methods=["GET"])
-# def get_sensor_data():
-#     # Aqui você pode conectar com MQTT, banco de dados ou variáveis mockadas
-#     # Por enquanto vamos usar valores simulados (só pra teste)
-#     return jsonify({
-#         "lowSignalCount": ...,
-#         "cadenceTotalTime": ...,       # em segundos
-#         "nonCadenceTotalTime": ...    # em segundos
-#     })
-
-# @app.route("/sensores")
-# def sensores():
-
-#     with status_lock:
-#         print("Acessando /sensores")
-#         # if not latest_status:
-#         #     return jsonify({"message": "Aguardando dados do sensor..."})
-#         # on_message()
-#         # Aqui, você pode mapear os dados para os formatos esperados pelo frontend
-#         latest_status = json.loads(msg.payload.decode())
-#         sensor_data = {
-            
-#             "lowSignalCount": latest_status.get("lowSignalCount", ),
-#             "cadenceTotalTime": latest_status.get("cadenceTotalTime", ),  # em segundos
-#             "nonCadenceTotalTime": latest_status.get("nonCadenceTotalTime",)  # em segundos
-#         }
-#         return jsonify(sensor_data)
+CORS(app, resources={r"/*": {"origins": "https://iotenvases.netlify.app"}})
 
 latest_status = {}
-# status_lock = threading.Lock()
+status_lock = threading.Lock()
 
+# Função para salvar os dados no banco MySQL
+def salvar_dados_no_banco(data):
+    try:
+        conexao = mysql.connector.connect(
+            host="127.0.0.1",
+            port=3306,
+            user="root",
+            password="victorgabriel337",  # Substitua pela sua senha do MySQL
+            database="iotenvases"
+        )
+        cursor = conexao.cursor()
+
+        query = """
+            INSERT INTO status_maquina (low_signal_count, cadence_total_time, non_cadence_total_time, data_hora)
+            VALUES (%s, %s, %s, %s)
+        """
+        valores = (
+            data.get("lowSignalCount"),
+            data.get("cadenceTotalTime"),
+            data.get("nonCadenceTotalTime"),
+            datetime.now()
+        )
+
+        cursor.execute(query, valores)
+        conexao.commit()
+        cursor.close()
+        conexao.close()
+        print("✅ Dados inseridos no banco com sucesso.")
+    except mysql.connector.Error as err:
+        print("Erro ao salvar no banco:", err)
+
+# Função chamada quando a mensagem MQTT é recebida
 def on_message(client, userdata, msg):
     global latest_status
     print("Callback on_message chamado!")
@@ -53,25 +53,10 @@ def on_message(client, userdata, msg):
 
     if msg.topic == "machine/status":
         latest_status = json.loads(msg.payload.decode())
-        print("latest_status atualizado:", latest_status)
+        salvar_dados_no_banco(latest_status)
+        print("latest_status atualizado e salvo no banco:", latest_status)
 
-
-
-@app.route("/sensores" , methods=["GET"])
-def sensores():
-    with status_lock:
-        print("GET /sensores chamado")
-        print("Conteúdo de latest_status:", latest_status)
-        # if not latest_status:
-        #     return jsonify({"message": "Aguardando dados do sensor..."})
-        return jsonify(latest_status)
-    
-    
-
-
-
-
-
+# Thread do cliente MQTT
 def mqtt_thread():
     print("Iniciando conexão MQTT...")
     mqtt_client = mqtt.Client()
@@ -82,13 +67,22 @@ def mqtt_thread():
     mqtt_client.on_message = on_message
     mqtt_client.loop_forever()
 
+# Inicia a thread do MQTT
 threading.Thread(target=mqtt_thread).start()
 
-# @app.route("/status", methods=["GET"])
-# def get_status():
-#     return jsonify(latest_status)
+# Rota principal (opcional)
+@app.route("/")
+def home():
+    return send_from_directory(os.path.join(app.root_path, 'Envases', 'Dashboard'), 'Dashboard.html')
 
+# Rota que retorna os dados atuais
+@app.route("/sensores", methods=["GET"])
+def sensores():
+    with status_lock:
+        print("GET /sensores chamado")
+        print("Conteúdo de latest_status:", latest_status)
+        return jsonify(latest_status)
 
-
+# Inicia o servidor Flask
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
