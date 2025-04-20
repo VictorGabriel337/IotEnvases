@@ -61,14 +61,14 @@ def on_message(client, userdata, msg):
             print("Erro ao decodificar JSON")
 
 
-@app.route("/sensores", methods=["GET"])
-def sensores():
-    with status_lock:  # Usando o lock para garantir que o acesso seja seguro
-        print("GET /sensores chamado")
-        print("Conteúdo de latest_status:", latest_status)
-        if not latest_status:
-            return jsonify({"message": "Dados não disponíveis"})
-        return jsonify(latest_status)
+# @app.route("/sensores", methods=["GET"])
+# def sensores():
+#     with status_lock:
+#         print("GET /sensores chamado")
+#         print("Conteúdo de latest_status:", latest_status)
+#         if not latest_status or "lowSignalCount" not in latest_status:
+#             return jsonify({"message": "Dados não disponíveis"})
+#         return jsonify(latest_status)
     
     
 
@@ -91,6 +91,16 @@ threading.Thread(target=mqtt_thread).start()
 # @app.route("/status", methods=["GET"])
 # def get_status():
 #     return jsonify(latest_status)
+
+@app.route("/sensores", methods=["GET"])
+def sensores():
+    with status_lock:
+        print("GET /sensores chamado")
+        print("Conteúdo de latest_status:", latest_status)
+        if not latest_status or "lowSignalCount" not in latest_status:
+            return jsonify({"message": "Dados não disponíveis"})
+        return jsonify(latest_status)
+    
 
 
 if __name__ == "__main__":
