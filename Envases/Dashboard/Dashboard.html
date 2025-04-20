@@ -94,13 +94,6 @@
      const backendURL = "https://iotenvases.onrender.com/sensores";
     console.log(" Script carregado!");
 
-    console.log("⏳ Iniciando verificação do backend...");
-
-setInterval(() => {
-    console.log("📡 Chamando função fetchSensorData...");
-    fetchSensorData();
-}, 2000);
-
 
 function formatarTempo(segundos) {
     const minutos = Math.floor(segundos / 60);
@@ -109,25 +102,17 @@ function formatarTempo(segundos) {
     return `${minutos}m ${segundosFormatado}s`;
 }
 
+// Função para buscar os dados do backend
 async function fetchSensorData() {
     try {
-        console.log("🔍 Buscando dados em:", backendURL);
-        
         const response = await fetch(backendURL);
         if (!response.ok) {
-            console.warn("⚠️ Resposta do servidor NÃO está ok:", response.status);
             throw new Error("Erro na resposta do servidor");
         }
         const data = await response.json();
         console.log("Dados recebidos:", data);
 
         // Atualiza os valores na página
-        if (data.message && data.message === "Dados não disponíveis") {
-            console.log("⏳ Dados ainda não chegaram. Esperando próxima tentativa...");
-            setTimeout(fetchSensorData, 2000); // tenta novamente após 2 segundos
-            return;
-        }
-
         if (data.lowSignalCount !== undefined) {
             document.getElementById("lowCount").textContent = data.lowSignalCount;
         }
@@ -142,11 +127,15 @@ async function fetchSensorData() {
 
     } catch (error) {
         console.error("Erro ao buscar os dados:", error);
+        // Exibindo mensagem de erro no frontend caso haja falha na requisição
         document.getElementById("lowCount").textContent = "Erro ao exibir";
         document.getElementById("maqProduzindo").textContent = "Erro ao exibir";
         document.getElementById("maqParada").textContent = "Erro ao exibir";
     }
 }
+
+// Atualiza os dados a cada 2 segundos
+setInterval(fetchSensorData, 2000);
 
 </script>
 
