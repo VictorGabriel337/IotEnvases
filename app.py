@@ -34,7 +34,7 @@ mqtt_client.username_pw_set("Iotenvases", "Iotenvases42")
 mqtt_client.tls_set()  # Importante para conexão com HiveMQ Cloud (porta 8883)
 mqtt_client.on_connect = on_connect
 mqtt_client.on_message = on_message
-mqtt_client.connect("534dc0a4d7544a60a30022826acda692.s1.eu.hivemq.cloud", 8883)
+mqtt_client.connect("broker.hivemq.com", 1883)
 
 # Inicia o loop do MQTT em segundo plano
 mqtt_client.loop_start()
