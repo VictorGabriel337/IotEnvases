@@ -87,7 +87,6 @@ def mqtt_thread():
 
 threading.Thread(target=mqtt_thread).start()
 
-
 @app.route('/sensores')
 def get_sensor_data():
     if not status_data:  # Verifica se está vazio
