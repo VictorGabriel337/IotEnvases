@@ -48,7 +48,7 @@ def home():
 # latest_status = {}
 status_lock = threading.Lock()
 
-status_data = {}  # Dicionário global
+status_data = None
 
 # Callback do MQTT
 def on_message(client, userdata, msg):
@@ -89,9 +89,10 @@ threading.Thread(target=mqtt_thread).start()
 
 @app.route('/sensores')
 def get_sensor_data():
-    if not status_data:  # Verifica se está vazio
-        return jsonify({"message": "Dados não disponíveis"})
-    return jsonify(status_data)
+    with status_lock:
+        if not status_data:
+            return jsonify({"message": "Dados não disponíveis"})
+        return jsonify(status_data)
 
 # @app.route("/status", methods=["GET"])
 # def get_status():
