@@ -102,17 +102,19 @@ function formatarTempo(segundos) {
     return `${minutos}m ${segundosFormatado}s`;
 }
 
-// Função para buscar os dados do backend
 async function fetchSensorData() {
     try {
         const response = await fetch(backendURL);
-        if (!response.ok) {
-            throw new Error("Erro na resposta do servidor");
-        }
         const data = await response.json();
         console.log("Dados recebidos:", data);
 
-        // Atualiza os valores na página
+        if (data.message === "Dados não disponíveis") {
+            document.getElementById("lowCount").textContent = "Aguardando dados...";
+            document.getElementById("maqProduzindo").textContent = "-";
+            document.getElementById("maqParada").textContent = "-";
+            return;
+        }
+
         if (data.lowSignalCount !== undefined) {
             document.getElementById("lowCount").textContent = data.lowSignalCount;
         }
@@ -127,15 +129,11 @@ async function fetchSensorData() {
 
     } catch (error) {
         console.error("Erro ao buscar os dados:", error);
-        // Exibindo mensagem de erro no frontend caso haja falha na requisição
-        document.getElementById("lowCount").textContent = "Erro ao exibir";
-        document.getElementById("maqProduzindo").textContent = "Erro ao exibir";
-        document.getElementById("maqParada").textContent = "Erro ao exibir";
+        document.getElementById("lowCount").textContent = "Erro";
+        document.getElementById("maqProduzindo").textContent = "Erro";
+        document.getElementById("maqParada").textContent = "Erro";
     }
 }
-
-// Atualiza os dados a cada 2 segundos
-setInterval(fetchSensorData, 2000);
 
 </script>
 

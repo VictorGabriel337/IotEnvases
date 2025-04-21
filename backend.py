@@ -45,31 +45,29 @@ def home():
 #         }
 #         return jsonify(sensor_data)
 
-latest_status = {}
+# latest_status = {}
 status_lock = threading.Lock()
 
+status_data = {}  # Dicionário global
+
+# Callback do MQTT
 def on_message(client, userdata, msg):
-    global latest_status
-    print("Callback on_message chamado!")
-    print("Mensagem MQTT recebida em tópico:", msg.topic)
-    print("Payload recebido:", msg.payload.decode())
-
-    if msg.topic == "machine/status":
-        try:
-            latest_status = json.loads(msg.payload.decode())
-            print("Dados de status atualizados:", latest_status)
-        except json.JSONDecodeError:
-            print("Erro ao decodificar JSON")
+    global status_data
+    print(f"Mensagem MQTT recebida em tópico: {msg.topic}")
+    payload = json.loads(msg.payload.decode())
+    print("Payload recebido:", payload)
+    status_data = payload  # Atualiza o dicionário global
+    print("Dados de status atualizados:", status_data)
 
 
-@app.route("/sensores", methods=["GET"])
-def sensores():
-    with status_lock:
-        print("GET /sensores chamado")
-        print("Conteúdo de latest_status:", latest_status)
-        if not latest_status or "lowSignalCount" not in latest_status:
-            return jsonify({"message": "Dados não disponíveis"})
-        return jsonify(latest_status)
+# @app.route("/sensores", methods=["GET"])
+# def sensores():
+#     with status_lock:
+#         print("GET /sensores chamado")
+#         print("Conteúdo de latest_status:", latest_status)
+#         if not latest_status or "lowSignalCount" not in latest_status:
+#             return jsonify({"message": "Dados não disponíveis"})
+#         return jsonify(latest_status)
     
     
 
@@ -88,6 +86,13 @@ def mqtt_thread():
     mqtt_client.loop_forever()
 
 threading.Thread(target=mqtt_thread).start()
+
+
+@app.route('/sensores')
+def get_sensor_data():
+    if not status_data:  # Verifica se está vazio
+        return jsonify({"message": "Dados não disponíveis"})
+    return jsonify(status_data)
 
 # @app.route("/status", methods=["GET"])
 # def get_status():
