@@ -1,0 +1,7 @@
+services:
+  - type: web
+    name: iotenvases-backend
+    env: python
+    plan: free
+    buildCommand: ""
+    startCommand: python backend.py
