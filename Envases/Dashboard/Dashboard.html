@@ -97,7 +97,7 @@
 <script>
    async function atualizarDados() {
         try {
-            const response = await fetch("https://iotenvases.onrender.com"); // coloque aqui a URL real do backend no Render
+            const response = await fetch("https://iotenvases.onrender.com/api/dados"); // coloque aqui a URL real do backend no Render
             const data = await response.json();
 
             document.getElementById("lowCount").textContent = data.lowSignalCount ?? "0";
