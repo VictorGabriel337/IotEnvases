@@ -1,36 +1,28 @@
-from flask import Flask, jsonify ,send_from_directory
+from flask import Flask, jsonify, send_from_directory
 from flask_cors import CORS
 import paho.mqtt.client as mqtt
 import threading
 import json
 import os
-from datetime import datetime
 
 app = Flask(__name__, static_folder='Envases/Dashboard', static_url_path='')
-CORS(app,)  # Libera o CORS para todas as rotas e origens
+CORS(app)
 
-# variável global protegida por lock
+# Variáveis globais protegidas por lock
 latest_status = {}
 status_lock = threading.Lock()
 status_event = threading.Event()
-
 
 @app.route("/")
 def home():
     return send_from_directory(os.path.join(app.root_path, 'Envases', 'Dashboard'), 'Dashboard.html')
 
-
-
-latest_status = {}
-status_lock = threading.Lock()
-
-
 def on_connect(client, userdata, flags, rc):
-    print("✅ Conectado ao broker MQTT com código:", rc)
+    print(" Conectado ao broker MQTT com código:", rc)
     client.subscribe("machine/status")
 
 def on_message(client, userdata, msg):
-    global latest_status
+    global latest_status, status_event
     print("Callback on_message chamado!")
     print("Mensagem MQTT recebida em tópico:", msg.topic)
     print("Payload recebido:", msg.payload.decode())
@@ -44,28 +36,21 @@ def on_message(client, userdata, msg):
     except json.JSONDecodeError:
         print(" Erro ao decodificar JSON")
 
-
 @app.route("/sensores", methods=["GET"])
 def obter_dados():
     print("GET /sensores chamado")
     
     # Espera até que tenha dados disponíveis (no máximo 5 segundos)
     if not status_event.wait(timeout=5):
-        print("Timeout esperando dados do MQTT")
+        print(" Timeout esperando dados do MQTT")
         return jsonify({"message": "Dados não disponíveis"})
 
     with status_lock:
         if not latest_status:
-            print("Conteúdo de latest_status: VAZIO")
+            print(" Conteúdo de latest_status: VAZIO")
             return jsonify({"message": "Dados não disponíveis"})
-        print("Conteúdo de latest_status:", latest_status)
+        print(" Conteúdo de latest_status:", latest_status)
         return jsonify(latest_status)
-    
-    
-
-
-
-
 
 def mqtt_thread():
     print(" Iniciando conexão MQTT...")
@@ -80,19 +65,11 @@ def mqtt_thread():
         print(" Erro ao conectar no MQTT:", e)
         return
 
-    mqtt_client.subscribe("machine/status")
-    print(" Subscrito no tópico machine/status")
+    mqtt_client.on_connect = on_connect
     mqtt_client.on_message = on_message
     mqtt_client.loop_start()
 
-
-
-
-
-    
-
-
+#  Inicia a thread do MQTT ANTES de rodar o Flask
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)
     threading.Thread(target=mqtt_thread).start()
-
+    app.run(host="0.0.0.0", port=5000, debug=True)
