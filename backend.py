@@ -28,6 +28,7 @@ def on_connect(client, userdata, flags, rc):
     client.subscribe("machine/status")
 
 def on_message(client, userdata, msg):
+    global latest_status
     print("Callback on_message chamado!")
     print("Mensagem MQTT recebida em tópico:", msg.topic)
     print("Payload recebido:", msg.payload.decode())
@@ -35,7 +36,6 @@ def on_message(client, userdata, msg):
     try:
         payload = json.loads(msg.payload.decode())
         with status_lock:
-            global latest_status
             latest_status = payload
             print("Dados de status atualizados:", latest_status)
     except json.JSONDecodeError:
