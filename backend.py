@@ -42,7 +42,7 @@ def on_message(client, userdata, msg):
         print(" Erro ao decodificar JSON")
 
 
-@app.route("/sensores", methods=["POST"])
+@app.route("/sensores", methods=["GET"])
 def obter_dados():
     print("GET /sensores chamado")
     with status_lock:
