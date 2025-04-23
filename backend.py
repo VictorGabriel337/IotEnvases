@@ -39,8 +39,8 @@ def on_message(client, userdata, msg):
         payload = json.loads(msg.payload.decode())
         with status_lock:
             latest_status = payload
-            status_event.set()
             print("Dados de status atualizados:", latest_status)
+            status_event.set()
     except json.JSONDecodeError:
         print(" Erro ao decodificar JSON")
 
@@ -48,8 +48,9 @@ def on_message(client, userdata, msg):
 @app.route("/sensores", methods=["GET"])
 def obter_dados():
     print("GET /sensores chamado")
-
-    if not status_event.wait(timeout=5):  # Aguarda no máximo 5 segundos
+    
+    # Espera até que tenha dados disponíveis (no máximo 5 segundos)
+    if not status_event.wait(timeout=5):
         print("Timeout esperando dados do MQTT")
         return jsonify({"message": "Dados não disponíveis"})
 
@@ -57,7 +58,6 @@ def obter_dados():
         if not latest_status:
             print("Conteúdo de latest_status: VAZIO")
             return jsonify({"message": "Dados não disponíveis"})
-
         print("Conteúdo de latest_status:", latest_status)
         return jsonify(latest_status)
     
