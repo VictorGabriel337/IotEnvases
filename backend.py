@@ -11,6 +11,9 @@ import time
 app = Flask(__name__, static_folder='Envases/Dashboard', static_url_path='')
 CORS(app,)  # Libera o CORS para todas as rotas e origens
 
+# variável global protegida por lock
+latest_status = {}
+status_lock = threading.Lock()
 
 @app.route("/")
 def home():
@@ -22,26 +25,28 @@ latest_status = {}
 status_lock = threading.Lock()
 
 def on_message(client, userdata, msg):
-    global latest_status
     print("Callback on_message chamado!")
     print("Mensagem MQTT recebida em tópico:", msg.topic)
     print("Payload recebido:", msg.payload.decode())
 
-    if msg.topic == "machine/status":
-        try:
-            latest_status = json.loads(msg.payload.decode())
+    try:
+        payload = json.loads(msg.payload.decode())
+        with status_lock:
+            global latest_status
+            latest_status = payload
             print("Dados de status atualizados:", latest_status)
-        except json.JSONDecodeError:
-            print("Erro ao decodificar JSON")
+    except json.JSONDecodeError:
+        print(" Erro ao decodificar JSON")
 
 
 @app.route("/sensores", methods=["GET"])
-def sensores():
+def obter_dados():
+    print("GET /sensores chamado")
     with status_lock:
-        print("GET /sensores chamado")
-        print("Conteúdo de latest_status:", latest_status)
-        if not latest_status or "lowSignalCount" not in latest_status:
+        if not latest_status:
+            print("Conteúdo de latest_status: VAZIO")
             return jsonify({"message": "Dados não disponíveis"})
+        print("Conteúdo de latest_status:", latest_status)
         return jsonify(latest_status)
     
     
