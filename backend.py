@@ -76,7 +76,7 @@ def mqtt_thread():
     mqtt_client.on_message = on_message
     mqtt_client.loop_start()
 
-threading.Thread(target=mqtt_thread).start()
+
 
 
 
@@ -84,7 +84,6 @@ threading.Thread(target=mqtt_thread).start()
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
-    start_mqtt()
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=True)
+    threading.Thread(target=mqtt_thread).start()
 
