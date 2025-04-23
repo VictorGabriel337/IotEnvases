@@ -12,6 +12,8 @@ CORS(app,)  # Libera o CORS para todas as rotas e origens
 # variável global protegida por lock
 latest_status = {}
 status_lock = threading.Lock()
+status_event = threading.Event()
+
 
 @app.route("/")
 def home():
@@ -37,6 +39,7 @@ def on_message(client, userdata, msg):
         payload = json.loads(msg.payload.decode())
         with status_lock:
             latest_status = payload
+            status_event.set()
             print("Dados de status atualizados:", latest_status)
     except json.JSONDecodeError:
         print(" Erro ao decodificar JSON")
@@ -45,10 +48,16 @@ def on_message(client, userdata, msg):
 @app.route("/sensores", methods=["GET"])
 def obter_dados():
     print("GET /sensores chamado")
+
+    if not status_event.wait(timeout=5):  # Aguarda no máximo 5 segundos
+        print("Timeout esperando dados do MQTT")
+        return jsonify({"message": "Dados não disponíveis"})
+
     with status_lock:
         if not latest_status:
             print("Conteúdo de latest_status: VAZIO")
             return jsonify({"message": "Dados não disponíveis"})
+
         print("Conteúdo de latest_status:", latest_status)
         return jsonify(latest_status)
     
