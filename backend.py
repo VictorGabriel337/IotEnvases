@@ -4,9 +4,7 @@ import paho.mqtt.client as mqtt
 import threading
 import json
 import os
-import mysql.connector
 from datetime import datetime
-import time
 
 app = Flask(__name__, static_folder='Envases/Dashboard', static_url_path='')
 CORS(app,)  # Libera o CORS para todas as rotas e origens
@@ -76,7 +74,7 @@ def mqtt_thread():
     mqtt_client.subscribe("machine/status")
     print(" Subscrito no tópico machine/status")
     mqtt_client.on_message = on_message
-    mqtt_client.loop_forever()
+    mqtt_client.loop_start()
 
 threading.Thread(target=mqtt_thread).start()
 
