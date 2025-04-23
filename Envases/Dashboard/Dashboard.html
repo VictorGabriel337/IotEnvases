@@ -107,15 +107,15 @@
         const data = await response.json();
 
         // Logs para debug
-        console.log("🔄 Dados recebidos do servidor:", data);
+        console.log(" Dados recebidos do servidor:", data);
 
         const lowCount = data.lowSignalCount ?? "0";
         const tempoProd = data.cadenceTotalTime ?? 0;
         const tempoParado = data.nonCadenceTotalTime ?? 0;
 
-        console.log("📦 lowSignalCount:", lowCount);
-        console.log("🟢 Tempo Produzindo (segundos):", tempoProd);
-        console.log("🔴 Tempo Parado (segundos):", tempoParado);
+        console.log(" lowSignalCount:", lowCount);
+        console.log(" Tempo Produzindo (segundos):", tempoProd);
+        console.log(" Tempo Parado (segundos):", tempoParado);
 
         document.getElementById("lowCount").textContent = lowCount;
 
@@ -131,7 +131,7 @@
         document.getElementById("maqParada").textContent = formatarTempo(tempoParado);
 
     } catch (error) {
-        console.error("❌ Erro ao buscar dados:", error);
+        console.error(" Erro ao buscar dados:", error);
     }
 }
 
