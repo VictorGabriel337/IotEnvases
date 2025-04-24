@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify , render_template
 from flask_cors import CORS
 import paho.mqtt.client as mqtt
 import threading
@@ -6,7 +6,7 @@ import ssl
 import json
 
 app = Flask(__name__, static_folder='Envases/Dashboard', static_url_path='')
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "*"}})
 
 # Configurações MQTT (HiveMQ)
 MQTT_HOST = "534dc0a4d7544a60a30022826acda692.s1.eu.hivemq.cloud"
@@ -17,7 +17,7 @@ MQTT_PASSWORD = "Iotenvases42"
 
 @app.route('/')
 def index():
-    return app.send_static_file('Dashboard.html')
+    return render_template('Dashboard.html')
 
 # Variável para armazenar o último status recebido
 last_status = {"status": "Aguardando dados..."}
