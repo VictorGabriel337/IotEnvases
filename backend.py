@@ -3,6 +3,7 @@ from flask_cors import CORS
 import paho.mqtt.client as mqtt
 import threading
 import ssl
+import json
 
 app = Flask(__name__, static_folder='Envases/Dashboard', static_url_path='')
 CORS(app)
@@ -32,7 +33,13 @@ def on_message(client, userdata, msg):
     try:
         payload = msg.payload.decode()
         print(f"Mensagem recebida no tópico {msg.topic}: {payload}")
-        last_status = {"status": payload}
+        dados = json.loads(payload)  # transforma em dict
+        # Verifica se os campos estão presentes
+        last_status = {
+            "lowSignalCount": dados.get("lowSignalCount", 0),
+            "cadenceTotalTime": dados.get("cadenceTotalTime", 0),
+            "nonCadenceTotalTime": dados.get("nonCadenceTotalTime", 0)
+        }
     except Exception as e:
         print("Erro ao processar mensagem MQTT:", e)
 
