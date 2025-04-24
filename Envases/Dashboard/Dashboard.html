@@ -72,76 +72,62 @@
     </div> <!--div main-->
 
     <script>
-        // Captura os elementos
+        // Atualiza o iframe com o card do produto
         const selectElement = document.getElementById('produtoSelect');
         const iframeElement = document.getElementById('produtoIframe');
-
-        // Adiciona um evento para monitorar mudanças no select
-        selectElement.addEventListener('change', function() {
-            const selectedValue = this.value; // Pega o valor selecionado
-            iframeElement.src = selectedValue; // Atualiza o src do iframe
-
-//             function formatarTempo(segundos) {
-//     const minutos = Math.floor(segundos / 60);
-//     const restoSegundos = segundos % 60;
-//     const segundosFormatado = restoSegundos.toString().padStart(2, '0');
-//     return `${minutos}m ${segundosFormatado}s`;
-// }
-
-
+    
+        selectElement.addEventListener('change', function () {
+            iframeElement.src = this.value;
         });
-
-</script>
-
-
-<script>
-   async function atualizarDados() {
-    try {
-        const response = await fetch("https://iotenvases.onrender.com/sensores");
-
-        // Verifica se a resposta foi OK
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-
-        const data = await response.json();
-
-        // Logs para debug
-        console.log(" Dados recebidos do servidor:", data);
-
-        const lowCount = data.lowSignalCount ?? "0";
-        const tempoProd = data.cadenceTotalTime ?? 0;
-        const tempoParado = data.nonCadenceTotalTime ?? 0;
-
-        console.log(" lowSignalCount:", lowCount);
-        console.log(" Tempo Produzindo (segundos):", tempoProd);
-        console.log(" Tempo Parado (segundos):", tempoParado);
-
-        document.getElementById("lowCount").textContent = lowCount;
-
-        // Converte os segundos para formato hh:mm:ss
+    
+        // Função para formatar tempo (ex: 75 → "1m 15s")
         function formatarTempo(segundos) {
-            const h = String(Math.floor(segundos / 3600)).padStart(2, '0');
-            const m = String(Math.floor((segundos % 3600) / 60)).padStart(2, '0');
-            const s = String(segundos % 60).padStart(2, '0');
-            return `${h}:${m}:${s}`;
+            const minutos = Math.floor(segundos / 60);
+            const restoSegundos = segundos % 60;
+            const segundosFormatado = restoSegundos.toString().padStart(2, '0');
+            return `${minutos}m ${segundosFormatado}s`;
         }
-
-        document.getElementById("maqProduzindo").textContent = formatarTempo(tempoProd);
-        document.getElementById("maqParada").textContent = formatarTempo(tempoParado);
-
-    } catch (error) {
-        console.error(" Erro ao buscar dados:", error);
-    }
-}
-
-setInterval(atualizarDados, 1000); // Atualiza a cada segundo
-atualizarDados(); // Atualiza imediatamente ao carregar
-
-
-    setInterval(atualizarDados, 1000); // Atualiza a cada segundo
-    atualizarDados(); // Atualiza imediatamente ao carregar
-</script>
+    
+        // Função para buscar dados do backend e atualizar o dashboard
+        async function atualizarDados() {
+            try {
+                const response = await fetch('https://iotenvases.onrender.com/status'); // Rota do Flask
+                const data = await response.json();
+    
+                document.getElementById('lowCount').textContent = data.lowSignalCount;
+                document.getElementById('maqProduzindo').textContent = formatarTempo(data.cadenceTotalTime);
+                document.getElementById('maqParada').textContent = formatarTempo(data.nonCadenceTotalTime);
+            } catch (error) {
+                console.error('Erro ao buscar dados:', error);
+            }
+        }
+    
+        // Atualiza a cada 5 segundos
+        setInterval(atualizarDados, 5000);
+        atualizarDados(); // Atualiza ao carregar a página
+    </script>
+    ✅ 2. Confirme que seu backend.py tem a rota /status assim:
+    python
+    Copiar
+    Editar
+    from flask import Flask, jsonify
+    from flask_cors import CORS
+    
+    app = Flask(__name__, static_folder='Envases/Dashboard', static_url_path='')
+    CORS(app)
+    
+    # Exemplo de variáveis (depois isso virá do MQTT ou banco)
+    lowSignalCount = 123
+    cadenceTotalTime = 300  # segundos
+    nonCadenceTotalTime = 45  # segundos
+    
+    @app.route('/status')
+    def status():
+        return jsonify({
+            'lowSignalCount': lowSignalCount,
+            'cadenceTotalTime': cadenceTotalTime,
+            'nonCadenceTotalTime': nonCadenceTotalTime
+        })
 
 
 
