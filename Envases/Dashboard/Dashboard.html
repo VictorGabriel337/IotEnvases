@@ -91,7 +91,7 @@
         // Função para buscar dados do backend e atualizar o dashboard
         async function atualizarDados() {
             try {
-                const response = await fetch('https://iotenvases.onrender.com/status'); // Rota do Flask
+                const response = await fetch('/status'); // Rota do Flask
                 const data = await response.json();
     
                 document.getElementById('lowCount').textContent = data.lowSignalCount;
@@ -106,28 +106,6 @@
         setInterval(atualizarDados, 5000);
         atualizarDados(); // Atualiza ao carregar a página
     </script>
-    ✅ 2. Confirme que seu backend.py tem a rota /status assim:
-    python
-    Copiar
-    Editar
-    from flask import Flask, jsonify
-    from flask_cors import CORS
-    
-    app = Flask(__name__, static_folder='Envases/Dashboard', static_url_path='')
-    CORS(app)
-    
-    # Exemplo de variáveis (depois isso virá do MQTT ou banco)
-    lowSignalCount = 123
-    cadenceTotalTime = 300  # segundos
-    nonCadenceTotalTime = 45  # segundos
-    
-    @app.route('/status')
-    def status():
-        return jsonify({
-            'lowSignalCount': lowSignalCount,
-            'cadenceTotalTime': cadenceTotalTime,
-            'nonCadenceTotalTime': nonCadenceTotalTime
-        })
 
 
 
