@@ -14,6 +14,10 @@ MQTT_TOPIC = "machine/status"
 MQTT_USERNAME = "Iotenvases"
 MQTT_PASSWORD = "Iotenvases42"
 
+@app.route('/')
+def index():
+    return app.send_static_file('Dashboard.html')
+
 # Variável para armazenar o último status recebido
 last_status = {"status": "Aguardando dados..."}
 
