@@ -1,65 +1,62 @@
-from flask import Flask, jsonify , render_template
+from flask import Flask, jsonify ,send_from_directory
 from flask_cors import CORS
 import paho.mqtt.client as mqtt
 import threading
-import ssl
 import json
+import os
 
-app = Flask(__name__, static_folder='Envases/Dashboard', static_url_path='')
-CORS(app, resources={r"/*": {"origins": "*"}})
+app = Flask(__name__)
+CORS(app)  # Libera o CORS para todas as rotas e origens
 
-# Configurações MQTT (HiveMQ)
-MQTT_HOST = "534dc0a4d7544a60a30022826acda692.s1.eu.hivemq.cloud"
-MQTT_PORT = 8883
-MQTT_TOPIC = "machine/status"
-MQTT_USERNAME = "Iotenvases"
-MQTT_PASSWORD = "Iotenvases42"
 
-@app.route('/')
-def index():
-    return render_template('Dashboard.html')
+@app.route("/")
+def home():
+    return send_from_directory(os.path.join(app.root_path, 'Envases', 'Dashboard'), 'Dashboard.html')
 
-# Variável para armazenar o último status recebido
-last_status = {"status": "Aguardando dados..."}
 
-# Callback quando conecta no broker
-def on_connect(client, userdata, flags, rc):
-    print("Conectado ao MQTT com código: " + str(rc))
-    client.subscribe(MQTT_TOPIC)
+# @app.route("/sensores", methods=["GET"])
+# def get_sensor_data():
+#     # Aqui você pode conectar com MQTT, banco de dados ou variáveis mockadas
+#     # Por enquanto vamos usar valores simulados (só pra teste)
+#     return jsonify({
+#         "lowSignalCount": ...,
+#         "cadenceTotalTime": ...,       # em segundos
+#         "nonCadenceTotalTime": ...    # em segundos
+#     })
 
-# Callback quando recebe mensagem
+@app.route("/sensores")
+def sensores():
+    with status_lock:
+        print("Acessando /sensores")
+        if not latest_status:
+            return jsonify({"message": "Aguardando dados do sensor..."})
+        return jsonify(latest_status)
+
+latest_status = {}
+status_lock = threading.Lock()
+
 def on_message(client, userdata, msg):
-    global last_status
-    try:
-        payload = msg.payload.decode()
-        print(f"Mensagem recebida no tópico {msg.topic}: {payload}")
-        dados = json.loads(payload)  # transforma em dict
-        # Verifica se os campos estão presentes
-        last_status = {
-            "lowSignalCount": dados.get("lowSignalCount", 0),
-            "cadenceTotalTime": dados.get("cadenceTotalTime", 0),
-            "nonCadenceTotalTime": dados.get("nonCadenceTotalTime", 0)
-        }
-    except Exception as e:
-        print("Erro ao processar mensagem MQTT:", e)
+    global latest_status
+    if msg.topic == "machine/status":
+        latest_status = json.loads(msg.payload.decode())
+        print("Mensagem recebida via MQTT:", latest_status)
 
-# Função para rodar o MQTT client em uma thread separada
+
 def mqtt_thread():
-    client = mqtt.Client()
-    client.username_pw_set(MQTT_USERNAME, MQTT_PASSWORD)
-    client.tls_set_context(ssl.create_default_context())
-    client.on_connect = on_connect
-    client.on_message = on_message
+    print("Iniciando conexão MQTT...")
+    mqtt_client = mqtt.Client()
+    mqtt_client.username_pw_set("Iotenvases", "Iotenvases42")
+    mqtt_client.tls_set()
+    mqtt_client.connect("534dc0a4d7544a60a30022826acda692.s1.eu.hivemq.cloud", 8883)
+    mqtt_client.subscribe("machine/status")
+    mqtt_client.on_message = on_message
+    mqtt_client.loop_forever()
 
-    client.connect(MQTT_HOST, MQTT_PORT, 60)
-    client.loop_forever()
+threading.Thread(target=mqtt_thread).start()
 
-# Endpoint GET para fornecer o status mais recente
 @app.route("/status", methods=["GET"])
 def get_status():
-    return jsonify(last_status)
+    return jsonify(latest_status)
 
-# Inicia a thread MQTT e o servidor Flask
 if __name__ == "__main__":
-    threading.Thread(target=mqtt_thread).start()
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(host="0.0.0.0", port=5000)
