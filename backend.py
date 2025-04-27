@@ -37,6 +37,12 @@ def on_message(client, userdata, msg):
             latest_status = data
         print("Mensagem recebida via MQTT:", data)
 
+def start_mqtt():
+    thread = threading.Thread(target=mqtt_thread)
+    thread.daemon = True
+    thread.start()
+
+    
 def mqtt_thread():
     print("Iniciando conexão MQTT...")
     mqtt_client = mqtt.Client()
@@ -53,7 +59,7 @@ def mqtt_thread():
     mqtt_client.on_message = on_message
     mqtt_client.loop_forever()
 
-threading.Thread(target=mqtt_thread).start()
+# threading.Thread(target=mqtt_thread).start()
 
 @app.route("/sensores")
 def sensores():
