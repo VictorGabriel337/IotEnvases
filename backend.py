@@ -69,10 +69,11 @@ def sensores():
     with status_lock:
         print("Acessando /sensores")
         if not latest_status:
-            print("latest_status está vazio:", latest_status)
-            return jsonify({"message": "Aguardando dados do sensor..."})
-        print("latest_status encontrado:", latest_status)
-        return jsonify(latest_status)
+            print("latest_status encontrado:", latest_status)
+            return jsonify(latest_status)
+            # print("latest_status está vazio:", latest_status)
+            # return jsonify({"message": "Aguardando dados do sensor..."})
+       
 
 # @app.route("/status", methods=["GET"])
 # def get_status():
