@@ -1,4 +1,4 @@
-from flask import Flask, jsonify ,send_from_directory
+from flask import Flask, jsonify, send_from_directory
 from flask_cors import CORS
 import paho.mqtt.client as mqtt
 import threading
@@ -14,18 +14,6 @@ def home():
     return send_from_directory(os.path.join(app.root_path, 'Envases', 'Dashboard'), 'Dashboard.html')
 
 
-# @app.route("/sensores", methods=["GET"])
-# def get_sensor_data():
-#     # Aqui você pode conectar com MQTT, banco de dados ou variáveis mockadas
-#     # Por enquanto vamos usar valores simulados (só pra teste)
-#     return jsonify({
-#         "lowSignalCount": ...,
-#         "cadenceTotalTime": ...,       # em segundos
-#         "nonCadenceTotalTime": ...    # em segundos
-#     })
-
-
-
 latest_status = {}
 status_lock = threading.Lock()
 
@@ -36,8 +24,6 @@ def on_message(client, userdata, msg):
         with status_lock:
             latest_status = data
         print("Mensagem recebida via MQTT:", data)
-
-
 
 
 def mqtt_thread():
@@ -55,31 +41,24 @@ def mqtt_thread():
     mqtt_client.subscribe("machine/status")
     mqtt_client.on_message = on_message
     mqtt_client.loop_forever()
-    
 
-# threading.Thread(target=mqtt_thread).start()
-
-@app.before_first_request
-def start_mqtt():
-    thread = threading.Thread(target=mqtt_thread)
-    thread.daemon = True
-    thread.start()
 
 @app.route("/sensores")
 def sensores():
     with status_lock:
         print("Acessando /sensores")
         if not latest_status:
-            
             print("latest_status está vazio:", latest_status)
             return jsonify({"message": "Aguardando dados do sensor..."})
         print("latest_status encontrado:", latest_status)
         return jsonify(latest_status)
 
-# @app.route("/status", methods=["GET"])
-# def get_status():
-#     return jsonify(latest_status)
 
 if __name__ == "__main__":
-    start_mqtt()
+    # Iniciar a thread MQTT aqui para garantir que o MQTT inicie quando a aplicação for executada
+    thread = threading.Thread(target=mqtt_thread)
+    thread.daemon = True
+    thread.start()
+
+    # Iniciar o servidor Flask
     app.run(host="0.0.0.0", port=5000)
