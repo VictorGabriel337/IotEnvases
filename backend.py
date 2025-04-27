@@ -27,6 +27,7 @@ def home():
 @app.route("/sensores")
 def sensores():
     with status_lock:
+        print("Mensagem recebida via MQTT:", latest_status)
         print("Acessando /sensores")
         if not latest_status:
             return jsonify({"message": "Aguardando dados do sensor..."})
