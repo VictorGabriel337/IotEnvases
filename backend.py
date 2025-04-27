@@ -55,13 +55,14 @@ def mqtt_thread():
     mqtt_client.subscribe("machine/status")
     mqtt_client.on_message = on_message
     mqtt_client.loop_forever()
+    
 
-    def start_mqtt():
+# threading.Thread(target=mqtt_thread).start()
+
+def start_mqtt():
     thread = threading.Thread(target=mqtt_thread)
     thread.daemon = True
     thread.start()
-
-# threading.Thread(target=mqtt_thread).start()
 
 @app.route("/sensores")
 def sensores():
