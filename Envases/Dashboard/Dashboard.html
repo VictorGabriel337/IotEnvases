@@ -14,9 +14,7 @@
       <iframe class="sidebar-iframe" scrolling="no" src="../sidebar/Sidebar.html"></iframe>
 
     <div class="main">
-        
         <div class="primeira-coluna">
-
             <div class="definir">
                 <h3 class="text1">Produto</h3>
                 <div class="icon-img"> <img src="img/silhueta-garrafa.png"></div>
@@ -47,77 +45,63 @@
         <div class="segunda-coluna">
             <div class="prim-coluna">
                 <iframe id="produtoIframe" class="coca-iframe" scrolling="no" src="card-coca/coca.html"></iframe>
-                <!-- <iframe class="coca-iframe" scrolling="no" src="card-coca/coca.html"></iframe>
-                <iframe class="coca-iframe" scrolling="no" src="card-coca/fanta.html"></iframe>
-                <iframe class="coca-iframe" scrolling="no" src="card-coca/zero.html"></iframe> -->
             </div>
             <div class="seg-coluna"></div>
             <div class="ter-coluna"></div>
         </div>
 
         <div class="terceira-coluna">
-
             <div class="first-column"></div>
             <div class="second-column"></div>
-
-
         </div>
 
         <div class="quarta-coluna"> 
             <div class="coluna-um"></div>
             <div class="coluna-dois"></div>
         </div>
-
-
     </div> <!--div main-->
 
- <!-- Biblioteca Paho MQTT -->
- <script src="https://cdn.jsdelivr.net/npm/paho-mqtt@1.1.0/mqttws31.min.js" defer></script>
+    <!-- Biblioteca Paho MQTT (garanta que ela está sendo carregada primeiro) -->
+    <script src="https://cdn.jsdelivr.net/npm/paho-mqtt@1.1.0/mqttws31.min.js" async></script>
 
+    <script>
+        // Função que usa a biblioteca Paho MQTT
+        const host = "534dc0a4d7544a60a30022826acda692.s1.eu.hivemq.cloud:8884/mqtt";
+        const port = 8884; // Porta WSS segura
+        const username = "Iotenvases";
+        const password = "Iotenvases42";
+        const topic = "machine/status";
 
- <script>
-    // Função que usa a biblioteca Paho MQTT
-    const host = "534dc0a4d7544a60a30022826acda692.s1.eu.hivemq.cloud:8884/mqtt";
-    const port = 8884; // Porta WSS segura
-    const username = "Iotenvases";
-    const password = "Iotenvases42";
-    const topic = "machine/status";
+        const clientId = "client-" + Math.random().toString(16).substr(2, 8);
 
-    const clientId = "client-" + Math.random().toString(16).substr(2, 8);
+        const client = new Paho.MQTT.Client(host, port, "/mqtt", clientId);
 
-    const client = new Paho.MQTT.Client(host, port, "/mqtt", clientId);
+        client.onConnectionLost = function (responseObject) {
+            console.log("Conexão perdida:", responseObject.errorMessage);
+        };
 
-    client.onConnectionLost = function (responseObject) {
-        console.log("Conexão perdida:", responseObject.errorMessage);
-    };
+        client.onMessageArrived = function (message) {
+            console.log("Mensagem recebida:", message.payloadString);
+            const dados = JSON.parse(message.payloadString);
 
-    client.onMessageArrived = function (message) {
-        console.log("Mensagem recebida:", message.payloadString);
-        const dados = JSON.parse(message.payloadString);
+            // Atualiza os elementos na página
+            document.getElementById("lowCount").innerText = dados.lowSignalCount ?? "--";
+            document.getElementById("maqParada").innerText = dados.nonCadenceTotalTime ?? "--";
+            document.getElementById("maqProduzindo").innerText = dados.cadenceTotalTime ?? "--";
+        };
 
-        // Atualiza os elementos na página
-        document.getElementById("lowCount").innerText = dados.lowSignalCount ?? "--";
-        document.getElementById("maqParada").innerText = dados.nonCadenceTotalTime ?? "--";
-        document.getElementById("maqProduzindo").innerText = dados.cadenceTotalTime ?? "--";
-    };
-
-    client.connect({
-        useSSL: true,
-        userName: username,
-        password: password,
-        onSuccess: function () {
-            console.log("Conectado ao broker MQTT com sucesso!");
-            client.subscribe(topic);
-        },
-        onFailure: function (err) {
-            console.error("Erro ao conectar:", err);
-        }
-    });
-
+        client.connect({
+            useSSL: true,
+            userName: username,
+            password: password,
+            onSuccess: function () {
+                console.log("Conectado ao broker MQTT com sucesso!");
+                client.subscribe(topic);
+            },
+            onFailure: function (err) {
+                console.error("Erro ao conectar:", err);
+            }
+        });
     </script>
-
-
-
-    
 </body>
 </html>
