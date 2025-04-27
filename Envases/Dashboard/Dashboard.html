@@ -9,9 +9,9 @@
 <body>
     <video autoplay muted loop id="videoBG">
         <source src="video/videoplayback.mp4" type="video/mp4">
-      </video> 
+    </video> 
 
-      <iframe class="sidebar-iframe" scrolling="no" src="../sidebar/Sidebar.html"></iframe>
+    <iframe class="sidebar-iframe" scrolling="no" src="../sidebar/Sidebar.html"></iframe>
 
     <div class="main">
         <div class="primeira-coluna">
@@ -28,7 +28,7 @@
             <div class="definir">
                 <h3 class="text1">Garrafa produzida</h3>
                 <div class="icon-img"> <img src="img/silhueta-garrafa.png"></div>
-                <p id="lowCount" class="sensorlow">Carregando...</p>  <!-- Aqui será exibido o valor de lastLowTime -->
+                <p id="lowCount" class="sensorlow">Carregando...</p>  
             </div>
             <div class="definir">
                 <h3 class="text1">Maq. Parada</h3>
@@ -46,23 +46,11 @@
             <div class="prim-coluna">
                 <iframe id="produtoIframe" class="coca-iframe" scrolling="no" src="card-coca/coca.html"></iframe>
             </div>
-            <div class="seg-coluna"></div>
-            <div class="ter-coluna"></div>
-        </div>
-
-        <div class="terceira-coluna">
-            <div class="first-column"></div>
-            <div class="second-column"></div>
-        </div>
-
-        <div class="quarta-coluna"> 
-            <div class="coluna-um"></div>
-            <div class="coluna-dois"></div>
         </div>
     </div> <!--div main-->
 
-    <!-- Biblioteca Paho MQTT (garanta que ela está sendo carregada primeiro) -->
-    <script src="https://unpkg.com/paho-mqtt@1.1.0/mqttws31.min.js" async></script>
+    <!-- Biblioteca Paho MQTT -->
+    <script src="https://cdn.jsdelivr.net/npm/paho-mqtt@1.1.0/mqttws31.min.js" defer></script>
 
     <script>
         // Função que usa a biblioteca Paho MQTT
