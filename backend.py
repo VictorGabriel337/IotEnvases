@@ -59,6 +59,7 @@ def mqtt_thread():
 
 # threading.Thread(target=mqtt_thread).start()
 
+@app.before_first_request
 def start_mqtt():
     thread = threading.Thread(target=mqtt_thread)
     thread.daemon = True
@@ -69,11 +70,11 @@ def sensores():
     with status_lock:
         print("Acessando /sensores")
         if not latest_status:
-            print("latest_status encontrado:", latest_status)
-            return jsonify(latest_status)
-            # print("latest_status está vazio:", latest_status)
-            # return jsonify({"message": "Aguardando dados do sensor..."})
-       
+            
+            print("latest_status está vazio:", latest_status)
+            return jsonify({"message": "Aguardando dados do sensor..."})
+        print("latest_status encontrado:", latest_status)
+        return jsonify(latest_status)
 
 # @app.route("/status", methods=["GET"])
 # def get_status():
