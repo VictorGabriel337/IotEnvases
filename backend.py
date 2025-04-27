@@ -4,6 +4,7 @@ import paho.mqtt.client as mqtt
 import threading
 import json
 import os
+from queue import Queue
 
 app = Flask(__name__)
 CORS(app)  # Libera o CORS para todas as rotas e origens
@@ -18,12 +19,13 @@ latest_status = {}
 status_lock = threading.Lock()
 
 def on_message(client, userdata, msg):
-    global latest_status
     if msg.topic == "machine/status":
-        data = json.loads(msg.payload.decode())
-        with status_lock:
-            latest_status = data
-        print("Mensagem recebida via MQTT:", data)
+        try:
+            data = json.loads(msg.payload.decode())
+            latest_status.put(data)  # Coloca os dados na fila
+            print("Mensagem recebida via MQTT:", data)
+        except json.JSONDecodeError as e:
+            print("Erro ao decodificar a mensagem:", e)
 
 
 def mqtt_thread():
@@ -43,22 +45,23 @@ def mqtt_thread():
     mqtt_client.loop_forever()
 
 
-@app.route("/sensores")
-def sensores():
-    with status_lock:
-        print("Acessando /sensores")
-        if not latest_status:
-            print("latest_status está vazio:", latest_status)
-            return jsonify({"message": "Aguardando dados do sensor..."})
-        print("latest_status encontrado:", latest_status)
-        return jsonify(latest_status)
 
-
-if __name__ == "__main__":
-    # Iniciar a thread MQTT aqui para garantir que o MQTT inicie quando a aplicação for executada
+def start_mqtt():
+    print("Iniciando thread MQTT...")
     thread = threading.Thread(target=mqtt_thread)
     thread.daemon = True
     thread.start()
 
+
+@app.route("/sensores")
+def sensores():
+    if latest_status.empty():
+        return jsonify({"message": "Aguardando dados do sensor..."})
+    
+    data = latest_status.get()  # Pega os dados da fila
+    return jsonify(data)
+
+
+if __name__ == "__main__":
     # Iniciar o servidor Flask
     app.run(host="0.0.0.0", port=5000)
