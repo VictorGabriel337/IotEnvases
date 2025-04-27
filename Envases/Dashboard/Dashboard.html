@@ -72,27 +72,17 @@
     </div> <!--div main-->
 
  <!-- Biblioteca Paho MQTT -->
-<script src="https://unpkg.com/paho-mqtt/mqttws31.min.js"></script>
+ <script src="https://cdn.jsdelivr.net/npm/paho-mqtt@1.1.0/mqttws31.min.js"></script>
 
-<script>
-window.onload = function () {
-    if (typeof Paho === 'undefined') {
-        console.error("Biblioteca Paho MQTT não carregada.");
-        return;
-    }
 
-    // Função para formatar tempo em "Xm YYs"
-    function formatarTempo(segundos) {
-        const minutos = Math.floor(segundos / 60);
-        const restoSegundos = segundos % 60;
-        return `${minutos}m ${restoSegundos.toString().padStart(2, '0')}s`;
-    }
-
+ <script>
+    // Função que usa a biblioteca Paho MQTT
     const host = "534dc0a4d7544a60a30022826acda692.s1.eu.hivemq.cloud";
-    const port = 8884;
+    const port = 8884; // Porta WSS segura
     const username = "Iotenvases";
     const password = "Iotenvases42";
     const topic = "machine/status";
+
     const clientId = "client-" + Math.random().toString(16).substr(2, 8);
 
     const client = new Paho.MQTT.Client(host, port, "/mqtt", clientId);
@@ -103,16 +93,12 @@ window.onload = function () {
 
     client.onMessageArrived = function (message) {
         console.log("Mensagem recebida:", message.payloadString);
-        try {
-            const dados = JSON.parse(message.payloadString);
+        const dados = JSON.parse(message.payloadString);
 
-            // Atualiza os elementos com os dados recebidos
-            document.getElementById("lowCount").innerText = dados.lowSignalCount ?? "--";
-            document.getElementById("maqProduzindo").innerText = formatarTempo(dados.cadenceTotalTime ?? 0);
-            document.getElementById("maqParada").innerText = formatarTempo(dados.nonCadenceTotalTime ?? 0);
-        } catch (err) {
-            console.error("Erro ao processar a mensagem:", err);
-        }
+        // Atualiza os elementos na página
+        document.getElementById("lowCount").innerText = dados.lowSignalCount ?? "--";
+        document.getElementById("maqParada").innerText = dados.nonCadenceTotalTime ?? "--";
+        document.getElementById("maqProduzindo").innerText = dados.cadenceTotalTime ?? "--";
     };
 
     client.connect({
@@ -127,7 +113,6 @@ window.onload = function () {
             console.error("Erro ao conectar:", err);
         }
     });
-};
 </script>
 
 
