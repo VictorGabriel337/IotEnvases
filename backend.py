@@ -24,15 +24,7 @@ def home():
 #         "nonCadenceTotalTime": ...    # em segundos
 #     })
 
-@app.route("/sensores")
-def sensores():
-    with status_lock:
-        print("Acessando /sensores")
-        if not latest_status:
-            print("latest_status está vazio:", latest_status)
-            return jsonify({"message": "Aguardando dados do sensor..."})
-        print("latest_status encontrado:", latest_status)
-        return jsonify(latest_status)
+
 
 latest_status = {}
 status_lock = threading.Lock()
@@ -62,6 +54,16 @@ def mqtt_thread():
     mqtt_client.loop_forever()
 
 threading.Thread(target=mqtt_thread).start()
+
+@app.route("/sensores")
+def sensores():
+    with status_lock:
+        print("Acessando /sensores")
+        if not latest_status:
+            print("latest_status está vazio:", latest_status)
+            return jsonify({"message": "Aguardando dados do sensor..."})
+        print("latest_status encontrado:", latest_status)
+        return jsonify(latest_status)
 
 # @app.route("/status", methods=["GET"])
 # def get_status():
