@@ -65,7 +65,7 @@ def start_mqtt():
     thread.daemon = True
     thread.start()
 
-@app.route("/sensores")
+@app.route("/sensores" methods=["GET"])
 def sensores():
     with status_lock:
         print("Acessando /sensores")
