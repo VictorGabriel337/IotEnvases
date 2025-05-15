@@ -30,13 +30,11 @@ status_lock = threading.Lock()
 
 
 
-# Função chamada quando uma nova mensagem é recebida
 def on_message(client, userdata, msg):
-    global latest_status
     payload = json.loads(msg.payload.decode())
     print("Mensagem MQTT recebida:", payload)
-    with status_lock:
-        latest_status = payload
+    with open("status.json", "w") as f:
+        json.dump(payload, f)
 
 
 def mqtt_thread():
@@ -51,13 +49,14 @@ def mqtt_thread():
 
 threading.Thread(target=mqtt_thread).start()
 
-@app.route("/sensores", methods=["GET"])
+app.route("/sensores", methods=["GET"])
 def get_status():
-    with status_lock:
-        if latest_status:
-            return jsonify(latest_status)
-        else:
-            return jsonify({"message": "Aguardando dados do sensor..."})
+    try:
+        with open("status.json", "r") as f:
+            status = json.load(f)
+            return jsonify(status)
+    except FileNotFoundError:
+        return jsonify({"message": "Aguardando dados do sensor..."})
 
 
 @app.route("/status", methods=["GET"])
