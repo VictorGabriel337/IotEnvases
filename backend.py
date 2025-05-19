@@ -61,6 +61,7 @@ def sensores():
 
 @app.route("/status", methods=["GET"])
 def get_status():
+    global latest_status
     return jsonify(latest_status)
 
 if __name__ == "__main__":
