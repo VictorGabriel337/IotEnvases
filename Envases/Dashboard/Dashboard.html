@@ -60,6 +60,22 @@
             <div class="coluna-dois"></div>
         </div>
     </div>
+    <script>
+    // Já tem esse, pode adicionar dentro do mesmo <script> ou separado
+    const select = document.getElementById("produtoSelect");
+    const iframe = document.getElementById("produtoIframe");
+
+    select.addEventListener("change", () => {
+        const selectedValue = select.value;
+
+        if (selectedValue.endsWith(".html")) {
+            iframe.src = selectedValue;
+        } else {
+            
+            iframe.src = "";
+        }
+    });
+</script>
      
 <script>
 
