@@ -51,6 +51,7 @@ threading.Thread(target=mqtt_thread).start()
 
 @app.route("/sensores")
 def sensores():
+    global latest_status
     with status_lock:
         print("Acessando /sensores")
         if not latest_status:
