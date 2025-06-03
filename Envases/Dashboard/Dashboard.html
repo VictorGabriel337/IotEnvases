@@ -80,45 +80,29 @@
 <script>
 
     // Substituí o IP do ESP8266 aqui
-    const backendURL = "https://iotenvases.onrender.com/sensores";
-    console.log(" Script carregado!");
-
-
-// Função para buscar os dados do backend
+  // Função para buscar os dados do backend
 async function fetchSensorData() {
     try {
         const response = await fetch(backendURL);
         if (!response.ok) {
             throw new Error("Erro na resposta do servidor");
         }
-        const data = await response.json();
-        console.log("Dados recebidos:", data); // Log para verificar os dados
 
-           if (data.message) {
+        const data = await response.json();
+        console.log("Dados recebidos:", data);
+
+        if (data.message) {
             console.log("Esperando dados...");
-            setTimeout(fetchSensorData, 3000); // tenta de novo em 3s
+            document.getElementById("lowCount").textContent = "Esperando dados do servidor...";
+            document.getElementById("maqProduzindo").textContent = "Esperando dados...";
+            document.getElementById("maqParada").textContent = "Esperando dados...";
             return;
         }
 
-        // Verificar se 'message' está presente nos dados
-        if (data.message) {
-            document.getElementById("lowCount").textContent = data.message;
-            document.getElementById("maqProduzindo").textContent = data.message;
-            document.getElementById("maqParada").textContent = data.message;
-        } else {
-            // Caso contrário, continuar tratando os dados conforme esperado
-            if (data.lowSignalCount !== undefined) {
-                document.getElementById("lowCount").textContent = ` ${data.lowSignalCount}`;
-            }
-
-            if (data.cadenceTotalTime !== undefined) {
-                document.getElementById("maqProduzindo").textContent = ` ${formatarTempo(data.cadenceTotalTime)}`;
-            }
-
-            if (data.nonCadenceTotalTime !== undefined) {
-                document.getElementById("maqParada").textContent = ` ${formatarTempo(data.nonCadenceTotalTime)}`;
-            }
-        }
+        // Exibir os dados recebidos normalmente
+        document.getElementById("lowCount").textContent = data.lowSignalCount ?? "N/A";
+        document.getElementById("maqProduzindo").textContent = formatarTempo(data.cadenceTotalTime ?? 0);
+        document.getElementById("maqParada").textContent = formatarTempo(data.nonCadenceTotalTime ?? 0);
 
     } catch (error) {
         console.error("Erro ao buscar os dados:", error);
