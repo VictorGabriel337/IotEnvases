@@ -33,7 +33,8 @@ status_lock = threading.Lock()
 def on_message(client, userdata, msg):
     global latest_status
     if msg.topic == "machine/status":
-        latest_status = json.loads(msg.payload.decode())
+        with status_lock:
+            latest_status = json.loads(msg.payload.decode())
         print("Mensagem recebida via MQTT:", latest_status)
 
 
