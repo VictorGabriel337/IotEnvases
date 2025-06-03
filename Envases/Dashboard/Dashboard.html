@@ -80,7 +80,11 @@
 <script>
 
     // Substituí o IP do ESP8266 aqui
-  // Função para buscar os dados do backend
+    const backendURL = "https://iotenvases.onrender.com/sensores";
+    console.log(" Script carregado!");
+
+
+// Função para buscar os dados do backend
 async function fetchSensorData() {
     try {
         const response = await fetch(backendURL);
