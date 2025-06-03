@@ -94,6 +94,12 @@ async function fetchSensorData() {
         const data = await response.json();
         console.log("Dados recebidos:", data); // Log para verificar os dados
 
+           if (data.message) {
+            console.log("Esperando dados...");
+            setTimeout(fetchSensorData, 3000); // tenta de novo em 3s
+            return;
+        }
+
         // Verificar se 'message' está presente nos dados
         if (data.message) {
             document.getElementById("lowCount").textContent = data.message;
