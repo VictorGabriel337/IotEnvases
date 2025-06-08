@@ -76,6 +76,14 @@
         }
     });
 </script>
+
+<script>
+    function formatarTempo(segundos) {
+        const minutos = Math.floor(segundos / 60);
+        const segundosRestantes = segundos % 60;
+        return `${minutos}m ${segundosRestantes}s`;
+    }
+</script>
      
 <script>
 
@@ -126,13 +134,7 @@ async function fetchSensorData() {
 setInterval(fetchSensorData, 2000);
 </script>
 
-<script>
-    function formatarTempo(segundos) {
-        const minutos = Math.floor(segundos / 60);
-        const segundosRestantes = segundos % 60;
-        return `${minutos}m ${segundosRestantes}s`;
-    }
-</script>
+
 
 </body>
 </html>
