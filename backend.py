@@ -1,41 +1,26 @@
-from flask import Flask, jsonify ,send_from_directory
+from flask import Flask, jsonify, send_from_directory
 from flask_cors import CORS
 import paho.mqtt.client as mqtt
 import threading
 import json
 import os
+from pyngrok import ngrok
 
 app = Flask(__name__)
 CORS(app)  # Libera o CORS para todas as rotas e origens
-
 
 @app.route("/")
 def home():
     return send_from_directory(os.path.join(app.root_path, 'Envases', 'Dashboard'), 'Dashboard.html')
 
-
-# @app.route("/sensores", methods=["GET"])
-# def get_sensor_data():
-#     # Aqui você pode conectar com MQTT, banco de dados ou variáveis mockadas
-#     # Por enquanto vamos usar valores simulados (só pra teste)
-#     return jsonify({
-#         "lowSignalCount": ...,
-#         "cadenceTotalTime": ...,       # em segundos
-#         "nonCadenceTotalTime": ...    # em segundos
-#     })
-
 latest_status = {}
 status_lock = threading.Lock()
-
-
-
 
 def on_message(client, userdata, msg):
     global latest_status
     if msg.topic == "machine/status":
         latest_status = json.loads(msg.payload.decode())
         print("Mensagem recebida via MQTT:", latest_status)
-
 
 def mqtt_thread():
     print("Iniciando conexão MQTT...")
@@ -58,11 +43,15 @@ def sensores():
             return jsonify({"message": "Aguardando dados do sensor..."})
         return jsonify(latest_status)
 
-
 @app.route("/status", methods=["GET"])
 def get_status():
     global latest_status
     return jsonify(latest_status)
 
 if __name__ == "__main__":
+    # Abre túnel público para porta 5000 usando ngrok
+    public_url = ngrok.connect(5000)
+    print(f" * ngrok URL pública: {public_url}")
+
+    # Roda Flask normalmente
     app.run(host="0.0.0.0", port=5000)
