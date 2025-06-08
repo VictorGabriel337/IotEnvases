@@ -33,23 +33,19 @@ status_lock = threading.Lock()
 def on_message(client, userdata, msg):
     global latest_status
     if msg.topic == "machine/status":
-        with status_lock:
-            latest_status = json.loads(msg.payload.decode())
+        latest_status = json.loads(msg.payload.decode())
         print("Mensagem recebida via MQTT:", latest_status)
 
 
 def mqtt_thread():
     print("Iniciando conexão MQTT...")
-    try:
-        mqtt_client = mqtt.Client()
-        mqtt_client.username_pw_set("Iotenvases", "Iotenvases42")
-        mqtt_client.tls_set()
-        mqtt_client.connect("534dc0a4d7544a60a30022826acda692.s1.eu.hivemq.cloud", 8883)
-        mqtt_client.subscribe("machine/status")
-        mqtt_client.on_message = on_message
-        mqtt_client.loop_forever()
-    except Exception as e:
-        print("❌ Erro na thread MQTT:", e)
+    mqtt_client = mqtt.Client()
+    mqtt_client.username_pw_set("Iotenvases", "Iotenvases42")
+    mqtt_client.tls_set()
+    mqtt_client.connect("534dc0a4d7544a60a30022826acda692.s1.eu.hivemq.cloud", 8883)
+    mqtt_client.subscribe("machine/status")
+    mqtt_client.on_message = on_message
+    mqtt_client.loop_forever()
 
 threading.Thread(target=mqtt_thread).start()
 
@@ -69,6 +65,4 @@ def get_status():
     return jsonify(latest_status)
 
 if __name__ == "__main__":
-    import os
-    port = int(os.environ.get("PORT", 5000))  # usa a porta do Render se existir
-    app.run(host="0.0.0.0", port=port)
+    app.run(host="0.0.0.0", port=5000)
