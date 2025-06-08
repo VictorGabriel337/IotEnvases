@@ -102,7 +102,7 @@ async function fetchSensorData() {
         } else {
             // Caso contrário, continuar tratando os dados conforme esperado
             if (data.lowSignalCount !== undefined) {
-                document.getElementById("lowCount").textContent = `${data.lowSignalCount}`;
+                document.getElementById("lowCount").textContent = ` ${data.lowSignalCount}`;
             }
 
             if (data.cadenceTotalTime !== undefined) {
