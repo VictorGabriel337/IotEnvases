@@ -106,11 +106,11 @@ async function fetchSensorData() {
             }
 
             if (data.cadenceTotalTime !== undefined) {
-                document.getElementById("maqProduzindo").textContent = ` ${formatarTempo(data.cadenceTotalTime)}`;
+                document.getElementById("maqProduzindo").textContent = formatarTempo(data.cadenceTotalTime);
             }
 
             if (data.nonCadenceTotalTime !== undefined) {
-                document.getElementById("maqParada").textContent = ` ${formatarTempo(data.nonCadenceTotalTime)}`;
+                document.getElementById("maqParada").textContent = formatarTempo(data.nonCadenceTotalTime);
             }
         }
 
@@ -124,6 +124,14 @@ async function fetchSensorData() {
 
 // Atualiza os dados a cada 2 segundos
 setInterval(fetchSensorData, 2000);
+</script>
+
+<script>
+    function formatarTempo(segundos) {
+        const minutos = Math.floor(segundos / 60);
+        const segundosRestantes = segundos % 60;
+        return `${minutos}m ${segundosRestantes}s`;
+    }
 </script>
 
 </body>
