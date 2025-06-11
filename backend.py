@@ -4,7 +4,7 @@ import paho.mqtt.client as mqtt
 import threading
 import json
 import os
-from pyngrok import ngrok
+
 
 app = Flask(__name__)
 CORS(app)  # Libera o CORS para todas as rotas e origens
@@ -49,9 +49,6 @@ def get_status():
     return jsonify(latest_status)
 
 if __name__ == "__main__":
-    # Abre túnel público para porta 5000 usando ngrok
-    public_url = ngrok.connect(5000)
-    print(f" * ngrok URL pública: {public_url}")
-
+    
     # Roda Flask normalmente
     app.run(host="0.0.0.0", port=5000)
