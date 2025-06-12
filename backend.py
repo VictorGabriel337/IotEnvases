@@ -27,8 +27,12 @@ def mqtt_thread():
     mqtt_client = mqtt.Client()
     mqtt_client.username_pw_set("Iotenvases", "Iotenvases42")
     mqtt_client.tls_set()
+    mqtt_client.tls_insecure_set(True)  # TEMPORÁRIO
+    print("Antes de conectar...")
     mqtt_client.connect("534dc0a4d7544a60a30022826acda692.s1.eu.hivemq.cloud", 8883)
+    print("Conectado!")
     mqtt_client.subscribe("machine/status")
+    print("Inscrito no tópico!")
     mqtt_client.on_message = on_message
     mqtt_client.loop_forever()
 
