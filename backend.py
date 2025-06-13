@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, send_from_directory
+from flask import Flask, jsonify,render_template
 from flask_cors import CORS
 import paho.mqtt.client as mqtt
 import threading
@@ -11,7 +11,7 @@ CORS(app)  # Libera o CORS para todas as rotas e origens
 
 @app.route("/")
 def home():
-    return send_from_directory(os.path.join(app.root_path, 'Envases', 'Dashboard'), 'Dashboard.html')
+    return render_template("Dashboard.html")
 
 latest_status = {}
 status_lock = threading.Lock()
