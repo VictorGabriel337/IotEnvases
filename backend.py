@@ -6,7 +6,7 @@ import json
 import os
 
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder='templates', static_folder='static')
 CORS(app)  # Libera o CORS para todas as rotas e origens
 
 @app.route("/")
