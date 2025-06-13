@@ -21,7 +21,7 @@ def on_message(client, userdata, msg):
     if msg.topic == "machine/status":
         with status_lock:
             latest_status = json.loads(msg.payload.decode())
-            print("Mensagem recebida via MQTT:", latest_status)
+        print("Mensagem recebida via MQTT:", latest_status)
 
 def mqtt_thread():
     print("Iniciando conexão MQTT...")
