@@ -19,8 +19,9 @@ status_lock = threading.Lock()
 def on_message(client, userdata, msg):
     global latest_status
     if msg.topic == "machine/status":
-        latest_status = json.loads(msg.payload.decode())
-        print("Mensagem recebida via MQTT:", latest_status)
+        with status_lock:
+            latest_status = json.loads(msg.payload.decode())
+            print("Mensagem recebida via MQTT:", latest_status)
 
 def mqtt_thread():
     print("Iniciando conexão MQTT...")
@@ -36,7 +37,8 @@ def mqtt_thread():
     mqtt_client.on_message = on_message
     mqtt_client.loop_forever()
 
-threading.Thread(target=mqtt_thread).start()
+# threading.Thread(target=mqtt_thread).start()
+threading.Thread(target=mqtt_thread, daemon=True).start()
 
 @app.route("/sensores")
 def sensores():
