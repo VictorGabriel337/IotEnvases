@@ -47,6 +47,7 @@ def sensores():
         print("Acessando /sensores")
         print("Dado atual:", latest_status)
         if not latest_status:
+            print(latest_status)
             return jsonify({"message": "Aguardando dados do sensor..."})
         return jsonify(latest_status)
 
