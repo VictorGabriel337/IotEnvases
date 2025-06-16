@@ -56,7 +56,6 @@ def get_status():
     global latest_status
     return jsonify(latest_status)
 
-if __name__ == "__main__":
-    
-    # Roda Flask normalmente
-    app.run(host="0.0.0.0", port=5000)
+if __name__ == '__main__':
+    port = int(os.environ.get('PORT', 5000))  # usa a porta do Render se existir
+    app.run(host='0.0.0.0', port=port)
