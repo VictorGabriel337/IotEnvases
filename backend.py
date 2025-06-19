@@ -33,19 +33,24 @@ def on_message(client, userdata, msg):
             latest_status = json.loads(msg.payload.decode())
         print("Mensagem recebida:", latest_status)
 
-def mqtt_thread():
-    print("Iniciando thread MQTT...")
-    mqtt_client = mqtt.Client()
-    mqtt_client.username_pw_set("Iotenvases", "Iotenvases42")
-    mqtt_client.tls_set()
-    mqtt_client.tls_insecure_set(True)
-    mqtt_client.connect("534dc0a4d7544a60a30022826acda692.s1.eu.hivemq.cloud", 8883)
-    mqtt_client.subscribe("machine/status")
-    mqtt_client.on_message = on_message
-    mqtt_client.loop_forever()
+@app.before_first_request
+def start_mqtt_thread():
+    print("Iniciando thread MQTT via before_first_request...")
+    threading.Thread(target=mqtt_thread, daemon=True).start()
+    try:
+        mqtt_client = mqtt.Client()
+        mqtt_client.username_pw_set("Iotenvases", "Iotenvases42")
+        mqtt_client.tls_set()
+        mqtt_client.tls_insecure_set(True)
+        mqtt_client.connect("534dc0a4d7544a60a30022826acda692.s1.eu.hivemq.cloud", 8883)
+        mqtt_client.subscribe("machine/status")
+        mqtt_client.on_message = on_message
+        mqtt_client.loop_forever()
+    except Exception as e:
+        print("Erro na thread MQTT:", e)
 
  # Inicia a thread MQTT somente quando rodar local ou via Render com Python puro
-    threading.Thread(target=mqtt_thread, daemon=True).start()
+    # threading.Thread(target=mqtt_thread, daemon=True).start()
 if __name__ == '__main__':
    
 
