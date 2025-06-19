@@ -24,6 +24,7 @@ def on_message(client, userdata, msg):
         print("Mensagem recebida via MQTT:", latest_status)
 
 def mqtt_thread():
+    print("MQTT thread started. PID:", os.getpid())
     print("Iniciando conexão MQTT...")
     mqtt_client = mqtt.Client()
     mqtt_client.username_pw_set("Iotenvases", "Iotenvases42")
@@ -42,6 +43,7 @@ threading.Thread(target=mqtt_thread, daemon=True).start()
 
 @app.route("/sensores")
 def sensores():
+    print("Rota /sensores acessada. PID:", os.getpid())
     global latest_status
     with status_lock:
         print("Acessando /sensores")
