@@ -1,14 +1,15 @@
 from flask import Flask, jsonify, render_template
 from flask_cors import CORS
-import redis
+import paho.mqtt.client as mqtt
+import threading
 import json
 import os
 
 app = Flask(__name__, template_folder='templates', static_folder='static')
 CORS(app)
 
-# Conexão Redis
-redis_client = redis.Redis(host=os.getenv("REDIS_HOST", "localhost"), port=6379, decode_responses=True)
+latest_status = {}
+status_lock = threading.Lock()
 
 @app.route("/")
 def home():
@@ -16,19 +17,36 @@ def home():
 
 @app.route("/sensores")
 def sensores():
-    print("Rota /sensores acessada. PID:", os.getpid())
-    status = redis_client.get("latest_status")
-    if not status:
-        return jsonify({"message": "Aguardando dados do sensor..."})
-    return jsonify(json.loads(status))
+    with status_lock:
+        if not latest_status:
+            return jsonify({"message": "Aguardando dados do sensor..."})
+        return jsonify(latest_status)
 
-@app.route("/status", methods=["GET"])
+@app.route("/status")
 def get_status():
-    status = redis_client.get("latest_status")
-    if not status:
-        return jsonify({})
-    return jsonify(json.loads(status))
+    return jsonify(latest_status)
+
+def on_message(client, userdata, msg):
+    global latest_status
+    if msg.topic == "machine/status":
+        with status_lock:
+            latest_status = json.loads(msg.payload.decode())
+        print("Mensagem recebida:", latest_status)
+
+def mqtt_thread():
+    print("Iniciando thread MQTT...")
+    mqtt_client = mqtt.Client()
+    mqtt_client.username_pw_set("Iotenvases", "Iotenvases42")
+    mqtt_client.tls_set()
+    mqtt_client.tls_insecure_set(True)
+    mqtt_client.connect("534dc0a4d7544a60a30022826acda692.s1.eu.hivemq.cloud", 8883)
+    mqtt_client.subscribe("machine/status")
+    mqtt_client.on_message = on_message
+    mqtt_client.loop_forever()
 
 if __name__ == '__main__':
+    # Inicia a thread MQTT somente quando rodar local ou via Render com Python puro
+    threading.Thread(target=mqtt_thread, daemon=True).start()
+
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)
