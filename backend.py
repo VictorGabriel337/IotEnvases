@@ -33,10 +33,8 @@ def on_message(client, userdata, msg):
             latest_status = json.loads(msg.payload.decode())
         print("Mensagem recebida:", latest_status)
 
-@app.before_first_request
-def start_mqtt_thread():
-    print("Iniciando thread MQTT via before_first_request...")
-    threading.Thread(target=mqtt_thread, daemon=True).start()
+def mqtt_thread():
+    print("Iniciando thread MQTT...")
     try:
         mqtt_client = mqtt.Client()
         mqtt_client.username_pw_set("Iotenvases", "Iotenvases42")
@@ -49,8 +47,11 @@ def start_mqtt_thread():
     except Exception as e:
         print("Erro na thread MQTT:", e)
 
- # Inicia a thread MQTT somente quando rodar local ou via Render com Python puro
-    # threading.Thread(target=mqtt_thread, daemon=True).start()
+@app.before_first_request
+def start_mqtt_thread():
+    print("Iniciando thread MQTT via before_first_request...")
+    threading.Thread(target=mqtt_thread, daemon=True).start()
+
 if __name__ == '__main__':
    
 
