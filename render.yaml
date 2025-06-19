@@ -3,10 +3,25 @@ services:
     name: envases-backend
     env: python
     buildCommand: pip install -r requirements.txt
-    startCommand: python backend.py
+    startCommand: gunicorn backend:app
     envVars:
       - key: FLASK_ENV
         value: production
       - key: PORT
         value: 10000
     autoDeploy: true
+
+  - type: worker
+    name: envases-mqtt-worker
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: python mqtt_worker.py
+    envVars:
+      - key: MQTT_USER
+        value: Iotenvases
+      - key: MQTT_PASSWORD
+        value: Iotenvases42
+      - key: MQTT_HOST
+        value: 534dc0a4d7544a60a30022826acda692.s1.eu.hivemq.cloud
+      - key: MQTT_PORT
+        value: 8883
