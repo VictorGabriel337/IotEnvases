@@ -51,6 +51,7 @@ def mqtt_thread():
 def start_mqtt_thread():
     print("Iniciando thread MQTT via before_first_request...")
     threading.Thread(target=mqtt_thread, daemon=True).start()
+    # Aguardar um pouco para garantir que a thread MQTT esteja pronta
 
 if __name__ == '__main__':
    
