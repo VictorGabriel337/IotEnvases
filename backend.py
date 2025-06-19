@@ -44,9 +44,10 @@ def mqtt_thread():
     mqtt_client.on_message = on_message
     mqtt_client.loop_forever()
 
-if __name__ == '__main__':
-    # Inicia a thread MQTT somente quando rodar local ou via Render com Python puro
+ # Inicia a thread MQTT somente quando rodar local ou via Render com Python puro
     threading.Thread(target=mqtt_thread, daemon=True).start()
+if __name__ == '__main__':
+   
 
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)
