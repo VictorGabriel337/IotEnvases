@@ -27,17 +27,17 @@
             </div>
             <div class="definir">
                 <h3 class="text1">Garrafa produzida</h3>
-                <div class="icon-img"> <img src="img/silhueta-garrafa.png"></div>
+                <div class="icon-img"> <img src="../static/img/silhueta-garrafa.png"></div>
                 <p id="lowCount" class="sensorlow">Carregando...</p>  <!-- Aqui será exibido o valor de lastLowTime -->
             </div>
             <div class="definir">
                 <h3 class="text1">Maq. Parada</h3>
-                <div class="icon-img"> <img src="img/silhueta-garrafa.png"></div>
+                <div class="icon-img"> <img src="../static/img/silhueta-garrafa.png"></div>
                 <p id="maqParada" class="sensorlow">Carregando...</p>
             </div>
             <div class="definir">
                 <h3 class="text1">Maq. Produzindo</h3>
-                <div class="icon-img"> <img src="img/silhueta-garrafa.png"></div>
+                <div class="icon-img"> <img src="../static/img/silhueta-garrafa.png"></div>
                 <p id="maqProduzindo" class="sensorlow">Carregando...</p>
             </div>
         </div>
@@ -46,12 +46,19 @@
             <div class="prim-coluna">
                 <iframe id="produtoIframe" class="coca-iframe" scrolling="no" src="../static/card-coca/coca.html"></iframe>
             </div>
-            <div class="seg-coluna"></div>
-            <div class="ter-coluna"></div>
+            <div class="seg-coluna">
+                <iframe id="barraIframe" class="grafico-iframe" scrolling="no" src="../graficos/barra.html"></iframe>
+            </div>
+            <div class="ter-coluna">
+                <h1>Comparativo</h1>
+                <iframe id="pizzaIframe" class="grafico-iframe" scrolling="no" src="../graficos/pizza.html" ></iframe>
+            </div>
         </div>
 
         <div class="terceira-coluna">
-            <div class="first-column"></div>
+            <div class="first-column">
+                <iframe id="graficoLinhaIframe" class="grafico-iframe" scrolling="no" src="../graficos/linha.html"></iframe>
+            </div>
             <div class="second-column"></div>
         </div>
 
@@ -128,6 +135,20 @@ async function fetchSensorData() {
         document.getElementById("maqProduzindo").textContent = "Erro ao exibir";
         document.getElementById("maqParada").textContent = "Erro ao exibir";
     }
+    // Adicione isso dentro da função fetchSensorData, logo após tratar os dados:
+const pizzaIframe = document.getElementById("pizzaIframe");
+
+// Verifica se o iframe está carregado
+if (pizzaIframe && pizzaIframe.contentWindow) {
+    const parada = data.nonCadenceTotalTime || 0;
+    const produzindo = data.cadenceTotalTime || 0;
+
+    pizzaIframe.contentWindow.postMessage({
+        type: 'atualizarPizza',
+        pMenor: parada,
+        pMaior: produzindo
+    }, '*');
+}
 }
 
 // Atualiza os dados a cada 2 segundos

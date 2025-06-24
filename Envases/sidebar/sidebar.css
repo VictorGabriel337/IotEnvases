@@ -9,10 +9,10 @@
 
 }
 
-/* body{
-    background: #5b6677 ;
+ body{
+    background: transparent !important ;
 
-}  */
+}  
 
 .container{
     /* width: 100%;

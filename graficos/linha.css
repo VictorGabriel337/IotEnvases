@@ -1,0 +1,40 @@
+*{
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+
+}
+
+body{
+    /* background-color: #f0f0f0; */
+    font-family: 'Arial', sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+
+}
+
+
+.chart {
+    width: 100%;
+    max-width: 400px;
+    height: 100%;
+    max-height: 350px;
+    overflow: hidden; /* para evitar vazamento */
+    border-radius: 15px;
+    background: #251c35;
+    border: none;
+}
+
+
+canvas {
+    width: 700px;
+    max-width: 700px;
+    height: 300px;
+    max-height: 300px;
+    display: block;
+    border-radius: 10px;
+
+}
+

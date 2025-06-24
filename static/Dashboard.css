@@ -123,17 +123,65 @@ select{
 
 }
 
-.seg-coluna{
-width: 350px;
-height: 300px;
-position: relative;
-left: 590px;
-border: 1px solid black;
-border-radius: 10px;
-display: flex;
-float: left;
-margin-left: 0px;
+.seg-coluna {
+    width: 350px;
+    height: 300px;
+    border: 1px solid black;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    left: 590px;
+    overflow: hidden;
 }
+
+.seg-coluna iframe {
+    width: 100%;
+    height: 100%;  
+    max-height: 350px;
+    border: none;
+    object-fit: contain; 
+}
+
+#pizzaIframe{
+    width: 300px;
+    height: 300px;
+    border-radius: 10px;
+    position: relative;
+    left: 0px;
+    top: 0px;
+    border: none;
+}
+
+#graficoLinhaIframe{
+    width: 700px;
+    height: 300px;
+    border-radius: 10px;
+    position: relative;
+    left: 0px;
+    top: 0px;
+    border: none;
+}
+
+#pizzaIframe iframe{
+    width: 100%;
+    height: 100%;
+    border: none;
+    display: block;
+    object-fit: contain;
+}
+
+#barraIframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    display: block;
+    object-fit: contain;
+}
+
+
+
 
 .ter-coluna{
     width: 350px;
@@ -142,6 +190,17 @@ margin-left: 0px;
     border-radius: 10px;
     position: relative;
     left: 599px;
+    background: #151515;
+}
+
+.ter-coluna h1{
+    position: absolute;
+    left:70px;
+    bottom:240px;
+    color: white;
+    font-family: 'Arial', sans-serif;
+    font-size: 30px;
+    
 }
 
 .terceira-coluna{
@@ -158,6 +217,7 @@ margin-left: 0px;
     width: 700px;
     height: 300px;
     border: 1px solid black;
+    background: #251c35;
 }
 
 .second-column{
