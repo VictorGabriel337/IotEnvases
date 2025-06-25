@@ -109,13 +109,11 @@ async function fetchSensorData() {
         const data = await response.json();
         console.log("Dados recebidos:", data); // Log para verificar os dados
 
-        // Verificar se 'message' está presente nos dados
         if (data.message) {
             document.getElementById("lowCount").textContent = data.message;
             document.getElementById("maqProduzindo").textContent = data.message;
             document.getElementById("maqParada").textContent = data.message;
         } else {
-            // Caso contrário, continuar tratando os dados conforme esperado
             if (data.lowSignalCount !== undefined) {
                 document.getElementById("lowCount").textContent = ` ${data.lowSignalCount}`;
             }
@@ -127,6 +125,19 @@ async function fetchSensorData() {
             if (data.nonCadenceTotalTime !== undefined) {
                 document.getElementById("maqParada").textContent = formatarTempo(data.nonCadenceTotalTime);
             }
+
+            // ENVIA PARA O IFRAME DO GRÁFICO DE PIZZA
+            const parada = data.nonCadenceTotalTime || 0;
+            const produzindo = data.cadenceTotalTime || 0;
+
+            const pizzaIframe = document.getElementById("pizzaIframe");
+            if (pizzaIframe && pizzaIframe.contentWindow) {
+                pizzaIframe.contentWindow.postMessage({
+                    type: 'atualizarPizza',
+                    pMenor: parada,
+                    pMaior: produzindo
+                }, '*');
+            }
         }
 
     } catch (error) {
@@ -135,21 +146,8 @@ async function fetchSensorData() {
         document.getElementById("maqProduzindo").textContent = "Erro ao exibir";
         document.getElementById("maqParada").textContent = "Erro ao exibir";
     }
-    // Adicione isso dentro da função fetchSensorData, logo após tratar os dados:
-const pizzaIframe = document.getElementById("pizzaIframe");
-
-// Verifica se o iframe está carregado
-if (pizzaIframe && pizzaIframe.contentWindow) {
-    const parada = data.nonCadenceTotalTime || 0;
-    const produzindo = data.cadenceTotalTime || 0;
-
-    pizzaIframe.contentWindow.postMessage({
-        type: 'atualizarPizza',
-        pMenor: parada,
-        pMaior: produzindo
-    }, '*');
 }
-}
+
 
 // Atualiza os dados a cada 2 segundos
 setInterval(fetchSensorData, 2000);

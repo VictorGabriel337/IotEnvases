@@ -19,6 +19,23 @@ let chartPizza = new Chart(ctx, {
           padding: 15,
           usePointStyle: true
         }
+      },
+      tooltip: {
+        callbacks: {
+          label: function(context) {
+            const label = context.label || '';
+            const dataset = context.chart.data.datasets[0];
+            const totalRaw = dataset._rawDataTotal || 0;
+            const originalValues = dataset._originalData || [0, 0];
+            const index = context.dataIndex;
+            const valorSegundos = originalValues[index];
+
+            const minutos = Math.floor(valorSegundos / 60);
+            const segundos = Math.floor(valorSegundos % 60);
+
+            return `${label}: ${minutos}m ${segundos}s`;
+          }
+        }
       }
     },
     layout: {
@@ -37,9 +54,12 @@ window.addEventListener('message', (event) => {
 
     const total = parada + produzindo;
 
-    // Evita divisão por zero
     const porcentagemParada = total > 0 ? (parada / total) * 100 : 0;
     const porcentagemProduzindo = total > 0 ? (produzindo / total) * 100 : 0;
+
+    // Salva os valores originais em segundos para o tooltip
+    chartPizza.data.datasets[0]._originalData = [parada, produzindo];
+    chartPizza.data.datasets[0]._rawDataTotal = total;
 
     chartPizza.data.datasets[0].data = [porcentagemParada, porcentagemProduzindo];
     chartPizza.update();
