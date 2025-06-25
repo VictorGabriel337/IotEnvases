@@ -1,0 +1,113 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+
+    body{
+    padding: 2px;
+    margin: 10px;
+    height: 100%;
+    display: flex;
+    justify-content: center; 
+    align-items: center; 
+
+}
+
+
+.sidebar-iframe {
+    width: 16%;
+    height: 90vh;
+    position: absolute;
+    z-index: 10;
+    top: 40px;
+    left: 10px;
+    border: none;
+    overflow-y: hidden;
+}
+
+
+#videoBG {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    min-width: 100%;
+    min-height: 100%;
+    z-index: -1;
+    opacity: 0.9;
+}
+
+
+.main {
+  width: 900px;
+  height: 500px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border: 1px solid white;
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: white;
+}
+
+.timecadence{
+    width: 880px;
+    height: 480px;
+    position: absolute;
+    border: 1px solid white;
+    border-radius: 10px;
+    background-color: #151515;
+    justify-content: center;
+    align-items: center;
+}
+
+.timecadence h1 {
+    color: white;
+    text-align: center;
+    margin-top: 20px;
+    font-size: 40px;
+}
+
+
+.cadencia{
+    width:500px;
+    height: 250px;
+    margin: 0 auto;
+    display: flex;
+    border: 1px solid white;
+    position: absolute;
+  top: 25%;
+  left: 23%;
+  background: rgb(229, 225, 225);
+  border-radius: 10px;
+    
+
+}
+
+
+.tempo{
+    color: black;
+    font-size: 100px;
+    font-weight: bold;
+    position: relative;
+    top: 20%;
+    margin: 10px;
+    padding: 10px;
+    text-align: center;
+    width: 100%;
+}
+
+.descricao{
+    color: black;
+    font-size: 40px;
+    position: absolute;
+    bottom: 180px;
+    margin: 10px;
+    padding: 10px;
+    text-align: center;
+    width: 100%;
+}
