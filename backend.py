@@ -15,6 +15,10 @@ status_lock = threading.Lock()
 def home():
     return render_template("Dashboard.html")
 
+@app.route("/qualidade")
+def qualidade():
+    return render_template("qualidade.html")
+
 @app.route("/sensores")
 def sensores():
     with status_lock:
