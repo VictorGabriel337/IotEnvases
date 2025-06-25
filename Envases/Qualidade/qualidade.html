@@ -27,6 +27,29 @@
         </div>
     </div>
 
+<script>
+function atualizarDados() {
+  fetch('https://iotenvases.onrender.com/sensores')
+    .then(response => response.json())
+    .then(data => {
+      // Exibe os novos campos no console
+      console.log("Dados recebidos:", data);
+
+      document.getElementById('currentCadenceTime').textContent = formatarTempo(data.currentCadenceTime);
+      document.getElementById('currentNonCadenceTime').textContent = formatarTempo(data.currentNonCadenceTime);
+    })
+    .catch(error => console.error('Erro ao buscar dados:', error));
+}
+
+// Função para formatar segundos em MM:SS
+function formatarTempo(segundos) {
+  const min = String(Math.floor(segundos / 60)).padStart(2, '0');
+  const sec = String(segundos % 60).padStart(2, '0');
+  return `${min}:${sec}`;
+}
+
+setInterval(atualizarDados, 1000);  // Atualiza a cada segundo
+</script>
 
 
     
