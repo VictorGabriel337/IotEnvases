@@ -20,8 +20,9 @@
         <div class="timecadence">
             <h1>Cadencia Sopradora</h1>
             <div class="cadencia">
-                <p class="descricao">Maquina em Cadencia</p>
-                <p class="tempo">00:00:00</p>
+             <p class="descricao" id="descricaoStatus">Carregando status...</p>
+             <p><span id="tempoAtual">00:00</span></p>
+    </div>
 
             </div>
         </div>
@@ -32,11 +33,18 @@ function atualizarDados() {
   fetch('https://iotenvases.onrender.com/sensores')
     .then(response => response.json())
     .then(data => {
-      // Exibe os novos campos no console
       console.log("Dados recebidos:", data);
 
-      document.getElementById('currentCadenceTime').textContent = formatarTempo(data.currentCadenceTime);
-      document.getElementById('currentNonCadenceTime').textContent = formatarTempo(data.currentNonCadenceTime);
+      const descricao = document.getElementById('descricaoStatus');
+      const tempoAtual = document.getElementById('tempoAtual');
+
+      if (data.cadenceStatus === "Em cadência") {
+        descricao.textContent = "Cadência Ativa";
+        tempoAtual.textContent = formatarTempo(data.currentCadenceTime || 0);
+      } else {
+        descricao.textContent = "Fora de Cadência";
+        tempoAtual.textContent = formatarTempo(data.currentNonCadenceTime || 0);
+      }
     })
     .catch(error => console.error('Erro ao buscar dados:', error));
 }
@@ -48,7 +56,7 @@ function formatarTempo(segundos) {
   return `${min}:${sec}`;
 }
 
-setInterval(atualizarDados, 1000);  // Atualiza a cada segundo
+setInterval(atualizarDados, 1000);
 </script>
 
 

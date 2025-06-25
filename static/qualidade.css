@@ -89,12 +89,13 @@
 }
 
 
-.tempo{
+#tempoAtual{
     color: black;
     font-size: 100px;
     font-weight: bold;
     position: relative;
-    top: 20%;
+    top: 30%;
+    left: 110px;
     margin: 10px;
     padding: 10px;
     text-align: center;
