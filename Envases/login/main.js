@@ -23,7 +23,10 @@ document.addEventListener("DOMContentLoaded", function () {
         const usuariosValidos = {
             "tamires.menegossi": { senha: "Temp@123", cargo: "Supervisora Industrial", nome: "Tamires Menegossi", img: "../sidebar/img/tamires.jpeg" },
             "ricardo.magni": { senha: "Temp@123", cargo: "Gerente Industrial", nome: "Ricardo Magni", img: "../sidebar/img/ricardo.png" },
-            "victor.souza": { senha: "Temp@123", cargo: "Desenvolvedor Iot", nome: "Victor Gabriel", img: "../sidebar/img/ricardo.png" }
+            "victor.souza": { senha: "Temp@123", cargo: "Tecnico Manufatura", nome: "Victor Gabriel", img: "../sidebar/img/victor.jpg" },
+            "darlei.marcio": { senha: "Temp@123", cargo: "Tecnico Qualidade", nome: "Victor Gabriel", img: "../sidebar/img/darlei.jpg" },
+            "claudia.santos": { senha: "Temp@123", cargo: "Tecnica Qualidade", nome: "Victor Gabriel", img: "../sidebar/img/claudia.jpg" },
+            "alessandro.mitsuo": { senha: "Temp@123", cargo: "Tecnico Qualidade", nome: "Victor Gabriel", img: "../sidebar/img/alex.jpg" }
         };
 
         if (usuariosValidos[usuarioInput] && usuariosValidos[usuarioInput].senha === senhaInput) {
