@@ -4,7 +4,7 @@ const ctx = document.getElementById('myChart');
 const myChart = new Chart(ctx, {
   type: 'bar',
   data: {
-    labels: ['24/06', '25/06', '26/06', '27/06', '28/06', '29/06'],
+    labels: ['03/07', '04/07', '05/07', '07/07', '08/07', '09/07'],
     datasets: [{
       label: 'Amostra de Dados',
       data: [12, 19, 3, 5, 2, 3],
