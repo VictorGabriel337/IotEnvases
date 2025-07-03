@@ -6,7 +6,7 @@ const myChart = new Chart(ctx, {
   data: {
     labels: ['03/07', '04/07', '05/07', '07/07', '08/07', '09/07'],
     datasets: [{
-      label: 'Amostra de Dados',
+      label: 'Produção diaria',
       data: [12, 19, 3, 5, 2, 3],
       backgroundColor: [
         'rgba(255, 99, 132, 0.8)',
