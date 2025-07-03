@@ -24,7 +24,7 @@ document.addEventListener("DOMContentLoaded", function () {
             "tamires.menegossi": { senha: "Temp@123", cargo: "Supervisora Industrial", nome: "Tamires Menegossi", img: "../sidebar/img/tamires.jpeg" },
             "ricardo.magni": { senha: "Temp@123", cargo: "Gerente Industrial", nome: "Ricardo Magni", img: "../sidebar/img/ricardo.png" },
             "victor.souza": { senha: "Temp@123", cargo: "Tecnico Manufatura", nome: "Victor Gabriel", img: "../sidebar/img/victor.jpg" },
-            "darlei.marcio": { senha: "Temp@123", cargo: "Tecnico Qualidade", nome: "Darlei Marcop", img: "../sidebar/img/darlei.jpg" },
+            "darlei.marcio": { senha: "Temp@123", cargo: "Tecnico Qualidade", nome: "Darlei Marcio", img: "../sidebar/img/darlei.jpg" },
             "claudia.santos": { senha: "Temp@123", cargo: "Tecnica Qualidade", nome: "Claudia Santos", img: "../sidebar/img/claudia.jpg" },
             "alessandro.mitsuo": { senha: "Temp@123", cargo: "Tecnico Qualidade", nome: "Alessandro Mitsuo", img: "../sidebar/img/alex.jpg" }
         };
