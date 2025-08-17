@@ -27,7 +27,7 @@ document.addEventListener("DOMContentLoaded", function () {
             "darlei.marcio": { senha: "Temp@123", cargo: "Tecnico Qualidade", nome: "Darlei Marcio", img: "../sidebar/img/darlei.jpg" },
             "claudia.santos": { senha: "Temp@123", cargo: "Tecnica Qualidade", nome: "Claudia Santos", img: "../sidebar/img/claudia.jpg" },
             "alessandro.mitsuo": { senha: "Temp@123", cargo: "Tecnico Qualidade", nome: "Alessandro Mitsuo", img: "../sidebar/img/alex.jpg" },
-            "mario.rizzato": { senha: "Temp@123", cargo: "Especialista", nome: "Mario Rizzato", img: "../sidebar/img/alex.jpg" }
+            "mario.rizzato": { senha: "Temp@123", cargo: "Especialista", nome: "Mario Rizzato", img: "../sidebar/img/avatar.jpg" }
         };
 
         if (usuariosValidos[usuarioInput] && usuariosValidos[usuarioInput].senha === senhaInput) {
