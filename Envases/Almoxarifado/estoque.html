@@ -37,12 +37,12 @@
                     <td data-cell="Championships">0</td> <!--Quantidade-->
                 </tr>
                 <tr>
-                    <td>CORREIA DENTADA 25AT10/1330 BFX DL</td>
+                    <td>teste com peso do celular</td>
                     <td>A1.D0.02</td>
                     <td>243197</td>
                     <td>190456</td>
                     <td>SOPRADORA</td>
-                    <td>7</td>
+                    <td id="peso">7</td>
                 </tr>
                 <tr>
                     <td>ANEL;SIDEL/00000092717</td>
@@ -143,6 +143,34 @@
             </table>
         </div>
     </div>
+   
     
+<script>
+async function atualizarPeso() {
+    try {
+        let response = await fetch("http://127.0.0.1:5000/pieces"); // consulta backend
+        let data = await response.json();
+
+        // verifica se veio o valor da balança
+        if (data.pieceCount !== undefined) {
+            document.getElementById("peso").innerText = data.pieceCount || 0; // atualiza o peso
+        } else {
+            document.getElementById("peso").innerText = data.message;
+        }
+    } catch (error) {
+        console.error("Erro ao buscar peso:", error);
+        document.getElementById("peso").innerText = "Erro";
+    }
+}
+
+// atualiza a cada 1 segundo
+setInterval(atualizarPeso, 1000);
+
+// primeira chamada
+atualizarPeso();
+</script>
+
+
+
 </body>
 </html>

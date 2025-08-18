@@ -8,9 +8,7 @@ import os
 app = Flask(__name__, template_folder='templates', static_folder='static')
 CORS(app)
 
-# Armazenamento em memória
 latest_status = {}
-latest_piece = None
 status_lock = threading.Lock()
 
 @app.route("/")
@@ -21,10 +19,6 @@ def home():
 def qualidade():
     return render_template("qualidade.html")
 
-@app.route("/estoque")
-def estoque():
-    return render_template("estoque.html")
-
 @app.route("/sensores")
 def sensores():
     with status_lock:
@@ -32,35 +26,17 @@ def sensores():
             return jsonify({"message": "Aguardando dados do sensor..."})
         return jsonify(latest_status)
 
-@app.route("/pieces")
-def pieces():
-    with status_lock:
-        if latest_piece is None:
-            return jsonify({"message": "Aguardando dados da balança..."})
-        return jsonify({"pieceCount": latest_piece})
-
 @app.route("/status")
 def get_status():
     return jsonify(latest_status)
 
-# Função callback do MQTT
 def on_message(client, userdata, msg):
-    global latest_status, latest_piece
-    try:
-        payload = json.loads(msg.payload.decode())
-    except:
-        print("Erro ao decodificar JSON:", msg.payload)
-        return
+    global latest_status
+    if msg.topic == "machine/status":
+        with status_lock:
+            latest_status = json.loads(msg.payload.decode())
+        print("Mensagem recebida:", latest_status)
 
-    with status_lock:
-        if msg.topic == "machine/status":
-            latest_status = payload
-            print("Status recebido:", latest_status)
-        elif msg.topic == "machine/piece":
-            latest_piece = payload.get("pieceCount", 0)
-            print("Peças recebidas:", latest_piece)
-
-# Thread do MQTT
 def mqtt_thread():
     print("Iniciando thread MQTT...")
     try:
@@ -69,25 +45,20 @@ def mqtt_thread():
         mqtt_client.tls_set()
         mqtt_client.tls_insecure_set(True)
         mqtt_client.connect("534dc0a4d7544a60a30022826acda692.s1.eu.hivemq.cloud", 8883)
-
         mqtt_client.subscribe("machine/status")
-        mqtt_client.subscribe("machine/piece")  # <<< Novo tópico da balança
         mqtt_client.on_message = on_message
-
         mqtt_client.loop_forever()
     except Exception as e:
         print("Erro na thread MQTT:", e)
 
-mqtt_started = False  # flag global
-
-@app.before_request
-def start_mqtt_once():
-    global mqtt_started
-    if not mqtt_started:
-        threading.Thread(target=mqtt_thread, daemon=True).start()
-        mqtt_started = True
-        print("Thread MQTT iniciada antes da primeira requisição")
+@app.before_first_request
+def start_mqtt_thread():
+    print("Iniciando thread MQTT via before_first_request...")
+    threading.Thread(target=mqtt_thread, daemon=True).start()
+    # Aguardar um pouco para garantir que a thread MQTT esteja pronta
 
 if __name__ == '__main__':
+   
+
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)
