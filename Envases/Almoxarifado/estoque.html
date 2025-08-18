@@ -148,7 +148,7 @@
 <script>
 async function atualizarPeso() {
     try {
-        let response = await fetch("http://127.0.0.1:5000/pieces"); // consulta backend
+        let response = await fetch("https://iotenvases.onrender.com/pieces"); // consulta backend
         let data = await response.json();
 
         // verifica se veio o valor da balança
