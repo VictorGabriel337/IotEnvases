@@ -1,0 +1,27 @@
+ 1º - Primeira situação - firmware
+
+	- fazer um contador de recebimento do sensor, se caso não tiver recebendo o sinal do sensor contar o tempo que não esta recebendo
+
+	- caso não esteja vai abrir contagem para alertar o quanto tempo não esta recebendo sinal
+
+	- e uma contagem de quanto tempo esta recebendo o sinal
+
+	- caso não esteja recebendo sinal, vai ter uma contagem de 3 min e abre contagem para entrar na contagem de cadencia
+
+	- vai ser integrado com a aplicação web pra mostrar o tempo de paragem da maquina
+
+	
+
+ 2º - segunda situação - Firmware
+
+	- um contador de garrafa
+
+	- esse contador vai ser integrado com a pagina HTML e CSS pra mostrar na aplicação web quanto de garrafa já foi produzida
+
+
+
+3º - terceira situação - Software
+
+	- a ideia é fazer esse tipo de controle diário, quando mudar o dia zera essas contagem salva em uma planilha e salva em uma planilha excel
+
+	- no front-end vai ser só controle de monitoramento 

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compressor</title>
+    <link rel="stylesheet" href="compressor.css">
+</head>
+<body>
+    <video autoplay muted loop id="videoBG">
+        <source src="../../static/video/videoplayback.mp4" type="video/mp4">
+    </video>
+
+    <iframe class="iframe-sidebar" src="../Envases/sidebar/sidebar.html" scrolling="no" allowtransparency="true"></iframe>
+
+    <h1 class="title">COMPRESSOR - HORIZON 3000</h1>
+    <img class="logo" src="img/branco100px.png">
+    
+    <div class="main">
+        <div class="container">
+
+            
+
+            <!-- Área Esquerda: Ilustração do compressor -->
+            <div class="left-panel">
+                <div class="compressor-draw">
+                    <img src="img/horizon3000SF.png" alt="Compressor" class="compressor-image">
+                </div>
+            </div>
+
+            <!-- Área Direita: Conteúdo Dinâmico -->
+            <div class="right-panel">
+                <div class="dynamic-content"></div> <!-- container para conteúdo dinâmico -->
+
+                <!-- Menu de Ícones -->
+                <div class="menu">
+                    <div>🛠<br>Setup</div>
+                    <div>⚡<br>Power</div>
+                    <div>↔️<br>Controle</div>
+                    <div>📊<br>Parâmetros</div>
+                    <div>⏻<br>Desligar</div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="compressor.js"></script>
+</body>
+</html>

@@ -1,0 +1,25 @@
+document.addEventListener("DOMContentLoaded", function () {
+    // Pegando o botão de login
+    const botaoEntrar = document.querySelector(".sign-in-container button");
+
+    // Adicionando evento de clique ao botão
+    botaoEntrar.addEventListener("click", function (event) {
+        event.preventDefault(); // Evita o recarregamento da página
+
+        // Captura os valores digitados
+        const usuarioInput = document.querySelector(".sign-in-container input[type='text']").value;
+        const senhaInput = document.querySelector(".sign-in-container input[type='password']").value;
+
+        // Definindo os valores corretos
+        const usuarioCorreto = "tamires.menegossi";
+        const senhaCorreta = "Temp@123";
+
+        // Verificação
+        if (usuarioInput === usuarioCorreto && senhaInput === senhaCorreta) {
+            alert("Login bem-sucedido!");
+            window.location.href = "../home/inicio.html"; // Redireciona para outra página
+        } else {
+            alert("Usuário ou senha inválidos!");
+        }
+    });
+});

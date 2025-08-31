@@ -1,0 +1,221 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: white;
+    font-size: 1rem;
+}
+
+
+.title {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+    text-align: center;
+    position: absolute;
+    display: flex;
+    top: 85px;
+    right: 680px;
+
+}
+
+.logo {
+    width: 200px;
+    height: auto;
+    position: absolute;
+    display: flex;
+    top: 40px;
+    left: 410px;
+    z-index: 1;
+}
+
+
+#videoBG {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    min-width: 100%;
+    min-height: 100%;
+    z-index: -1;
+    opacity: 0.9;
+}
+
+.iframe-sidebar {
+    width: 16%;
+    height: 90vh;
+    position: absolute;
+    z-index: 10;
+    top: 40px;
+    left: 10px;
+  border: none;
+    overflow-y: hidden;
+    background-color: transparent;
+    isolation: isolate;
+    
+}
+
+
+.main{
+    padding: 0;
+    margin: 0;
+    height: 100vh;
+    width: 100%;
+    display: flex;
+    flex-direction: center;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid white;
+}
+
+
+.container {
+    width: 1400px;
+    height: 800px;
+    text-align: center;
+    padding: 20px;
+    background-color: rgba(0, 0, 0, 0.8);
+    background-image: url('img/background.png'); background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.4)), url('img/background.png');background-size: cover;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    margin: auto;
+    border: 1px solid white;
+    
+}
+
+
+/* Mantive seu CSS original e acrescentei abaixo */
+
+.container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 30px;
+}
+
+/* Painéis */
+.left-panel {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-right: 1px solid rgba(255,255,255,0.2);
+}
+
+.right-panel {
+    flex: 1;
+    padding-left: 30px;
+}
+
+/* Indicadores circulares */
+.stats {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 20px;
+}
+
+.circle-card {
+    text-align: center;
+}
+
+.circle {
+    --size: 120px;
+    width: var(--size);
+    height: var(--size);
+    border-radius: 50%;
+    border: 8px solid #222;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.2rem;
+    font-weight: bold;
+    background: conic-gradient(
+        red calc(var(--percent) * 1%),
+        #333 0
+    );
+    color: white;
+    margin-bottom: 10px;
+}
+
+/* Barras */
+.progress-section .bar {
+    margin: 15px 0;
+}
+
+.progress-section span {
+    font-size: 0.9rem;
+    display: block;
+    margin-bottom: 5px;
+    text-align: left;
+}
+
+.progress {
+    background: #222;
+    border-radius: 8px;
+    overflow: hidden;
+    height: 12px;
+    margin-top: 4px;
+}
+
+.progress div {
+    background: linear-gradient(90deg, #fff, #ff0000);
+    height: 100%;
+}
+
+/* Barra geral */
+.main-progress {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 25px 0;
+}
+
+.main-progress .progress {
+    flex: 1;
+    height: 14px;
+}
+
+.main-progress span {
+    font-size: 1.4rem;
+    font-weight: bold;
+}
+
+/* Menu de ícones */
+.menu {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 20px;
+}
+
+.menu div {
+    text-align: center;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.menu div:hover {
+    transform: scale(1.1);
+    color: red;
+}
+
+/* Compressor desenho (apenas placeholder) */
+.compressor-draw {
+  
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 0.9rem;
+}
+
+
+.compressor-image{
+    width: 700px;
+    height: 600px;
+    position: relative;
+    right: 40px;
+    bottom: 20px;
+}

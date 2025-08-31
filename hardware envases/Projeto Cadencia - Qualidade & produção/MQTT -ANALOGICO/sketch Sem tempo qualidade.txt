@@ -1,0 +1,226 @@
+#include <Wire.h>
+#include <LiquidCrystal_I2C.h>
+#include <ESP8266WiFi.h>
+#include <PubSubClient.h>
+#include <WiFiClientSecure.h>
+#include <NTPClient.h>
+#include <WiFiUdp.h>
+
+#define SENSOR_PIN A0           // Pino analógico para leitura do sensor
+#define THRESHOLD_LOW 404       // Limite de tensão para LOW (ajustável)
+#define THRESHOLD_HIGH 500      // Limite de tensão para HIGH (ajustável)
+#define DEBOUNCE_DELAY 50       // Tempo de debounce para estabilização do sinal
+
+const char* ssid = "Aimee1306";         // Nome da rede Wi-Fi
+const char* password = "@fernandacampos1306";    // Senha da rede Wi-Fi
+const char* mqtt_server = "534dc0a4d7544a60a30022826acda692.s1.eu.hivemq.cloud";
+const char* mqtt_username = "Iotenvases";
+const char* mqtt_password = "Iotenvases42";
+const int mqtt_port = 8883;
+
+WiFiUDP ntpUDP;
+NTPClient timeClient(ntpUDP, "pool.ntp.org", -3 * 3600); // -3 para horário de Brasília (ajuste conforme sua timezone)
+
+
+static const char *root_ca PROGMEM = R"EOF(
+-----BEGIN CERTIFICATE-----
+MIIDrzCCApegAwIBAgIQCDvgVpBCRrGhdWrJWZHHSjANBgkqhkiG9w0BAQUFADBh
+MQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5jMRkwFwYDVQQLExB3
+d3cuZGlnaWNlcnQuY29tMSAwHgYDVQQDExdEaWdpQ2VydCBHbG9iYWwgUm9vdCBD
+QTAeFw0wNjExMTAwMDAwMDBaFw0zMTExMTAwMDAwMDBaMGExCzAJBgNVBAYTAlVT
+MRUwEwYDVQQKEwxEaWdpQ2VydCBJbmMxGTAXBgNVBAsTEHd3dy5kaWdpY2VydC5j
+b20xIDAeBgNVBAMTF0RpZ2lDZXJ0IEdsb2JhbCBSb290IENBMIIBIjANBgkqhkiG
+9w0BAQEFAAOCAQ8AMIIBCgKCAQEA4jvhEXLeqKTTo1eqUKKPC3eQyaKl7hLOllsB
+CSDMAZOnTjC3U/dDxGkAV53ijSLdhwZAAIEJzs4bg7/fzTtxRuLWZscFs3YnFo97
+nh6Vfe63SKMI2tavegw5BmV/Sl0fvBf4q77uKNd0f3p4mVmFaG5cIzJLv07A6Fpt
+43C/dxC//AH2hdmoRBBYMql1GNXRor5H4idq9Joz+EkIYIvUX7Q6hL+hqkpMfT7P
+T19sdl6gSzeRntwi5m3OFBqOasv+zbMUZBfHWymeMr/y7vrTC0LUq7dBMtoM1O/4
+gdW7jVg/tRvoSSiicNoxBN33shbyTApOB6jtSj1etX+jkMOvJwIDAQABo2MwYTAO
+BgNVHQ8BAf8EBAMCAYYwDwYDVR0TAQH/BAUwAwEB/zAdBgNVHQ4EFgQUA95QNVbR
+TLtm8KPiGxvDl7I90VUwHwYDVR0jBBgwFoAUA95QNVbRTLtm8KPiGxvDl7I90VUw
+DQYJKoZIhvcNAQEFBQADggEBAMucN6pIExIK+t1EnE9SsPTfrgT1eXkIoyQY/Esr
+hMAtudXH/vTBH1jLuG2cenTnmCmrEbXjcKChzUyImZOMkXDiqw8cvpOp/2PV5Adg
+06O/nVsJ8dWO41P0jmP6P6fbtGbfYmbW0W5BjfIttep3Sp+dWOIrWcBAI+0tKIJF
+PnlUkiaY4IBIqDfv8NZ5YBberOgOzW6sRBc4L0na4UU+Krk2U886UAb3LujEV0ls
+YSEY1QSteDwsOoBrp+uvFRTp2InBuThs4pFsiv9kuXclVzDAGySj4dzp30d8tbQk
+CAUw7C29C79Fv1C5qfPrmAESrciIxpg0X40KPMbp1ZWVbd4=
+-----END CERTIFICATE-----
+)EOF";
+
+WiFiClientSecure espClient;
+PubSubClient client(espClient);
+
+unsigned long lastLowTime = 0;       // Armazena o tempo da última detecção de LOW
+unsigned long currentTime = 0;      // Armazena o tempo atual
+unsigned long stateStartTime = 0;   // Marca o início do estado atual (cadência ou fora de cadência)
+unsigned long lastEdgeTime = 0;     // Tempo da última alternância de HIGH para LOW
+unsigned long cadenceTotalTime = 0;    // Tempo acumulado em cadência
+unsigned long nonCadenceTotalTime = 0; // Tempo acumulado fora de cadência
+unsigned int lowSignalCount = 0;       // Contador de sinais LOW (não reseta)
+bool inCadence = true;                 // Indica se a máquina está em cadência
+int edgeCount = 0;                     // Contador de bordas descendentes (HIGH para LOW)
+int lastSensorState = HIGH;            // Estado anterior do sensor
+int stableSensorState = HIGH;          // Estado estável do sensor após debounce
+
+LiquidCrystal_I2C lcd(0x27, 16, 2);    // Endereço do display LCD, com 16 colunas e 2 linhas
+
+void setup_wifi() {
+  Serial.begin(115200);
+  delay(10);
+  Serial.print("Conectando ao WiFi: ");
+  Serial.println(ssid);
+
+  WiFi.mode(WIFI_STA);
+  WiFi.begin(ssid, password);
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+
+  Serial.println("\nWiFi conectado. IP:");
+  Serial.println(WiFi.localIP());
+}
+
+void callback(char* topic, byte* payload, unsigned int length) {
+  // Esta função pode ser usada para processar mensagens recebidas via MQTT
+}
+
+void reconnect() {
+  while (!client.connected()) {
+    Serial.print("Tentando conectar ao MQTT... ");
+    String clientId = "ESP8266Client-";
+    clientId += String(random(0xffff), HEX);
+
+    if (client.connect(clientId.c_str(), mqtt_username, mqtt_password)) {
+      Serial.println("Conectado ao MQTT.");
+    } else {
+      Serial.print("Falha ao conectar. Código: ");
+      Serial.print(client.state());
+      Serial.println(". Tentando novamente em 5 segundos...");
+      delay(5000);
+    }
+  }
+}
+
+void setup() {
+  pinMode(SENSOR_PIN, INPUT);         // Configura o pino analógico para leitura
+  Serial.begin(115200);
+  lcd.init();                         // Inicializa o display LCD
+  lcd.backlight();                    // Liga a luz de fundo do display
+  stateStartTime = millis();          // Inicializa o tempo de estado
+  lcd.clear();
+
+  setup_wifi();
+
+  #ifdef ESP8266
+  espClient.setInsecure();
+#else
+  espClient.setCACert(root_ca);
+#endif
+  
+  client.setServer(mqtt_server, mqtt_port);
+  client.setCallback(callback);
+  timeClient.begin();
+}
+
+void loop() {
+  currentTime = millis();
+  if (!client.connected()) {
+  reconnect();
+}
+  client.loop();  // Processa qualquer mensagem recebida do MQTT
+
+
+
+
+  // Lê o valor do pino analógico
+  int sensorValue = analogRead(SENSOR_PIN);
+
+  // Converte o valor analógico para HIGH ou LOW com base nos limites
+  int sensorState = map(sensorValue, 0, 1023, 0, 1023);
+  if (sensorState < THRESHOLD_LOW) {
+    sensorState = LOW;
+  } else if (sensorState > THRESHOLD_HIGH) {
+    sensorState = HIGH;
+  } else {
+    sensorState = lastSensorState;  // Mantém o estado anterior se estiver entre os limites
+  }
+
+  // Detecta borda descendente (transição de HIGH para LOW no estado estável)
+  if (sensorState == LOW && lastSensorState == HIGH) {
+    lastLowTime = currentTime;
+    lastEdgeTime = currentTime;
+    lowSignalCount++;
+
+    if (!inCadence) {
+      edgeCount++;
+    }
+
+    if (!inCadence && edgeCount >= 5) {
+      nonCadenceTotalTime += (currentTime - stateStartTime); // Atualiza tempo fora de cadência
+      stateStartTime = currentTime;
+      inCadence = true;
+      edgeCount = 0;
+    }
+  }
+
+  if ((currentTime - lastLowTime) >= 60000 && inCadence) {
+    cadenceTotalTime += (currentTime - stateStartTime); // Atualiza tempo em cadência
+    stateStartTime = currentTime;
+    inCadence = false;
+    edgeCount = 0;
+  }
+
+
+  // Publica os dados no MQTT
+  if (client.connected()) {
+    String cadenceStatus = inCadence ? "Em cadência" : "Fora de cadência";
+    String payload = "{\"cadenceStatus\": \"" + cadenceStatus + "\", \"lowSignalCount\": " + String(lowSignalCount) + ", \"cadenceTotalTime\": " + String(cadenceTotalTime / 1000) + ", \"nonCadenceTotalTime\": " + String(nonCadenceTotalTime / 1000) + "}";
+    delay(100);
+    client.publish("machine/status", payload.c_str());  // Publica no tópico "machine/status"
+    // Serial.println("Mensagem publicada no MQTT: ");
+    // Serial.println(payload);  // Debug: Veja o payload no Serial Monitor
+    
+  }
+
+  // Exibe o tempo no LCD
+  lcd.clear();
+  if (inCadence) {
+    unsigned long currentCadenceTime = currentTime - stateStartTime;
+    lcd.setCursor(0, 0);
+    lcd.print("Cadencia ativa:");
+    lcd.setCursor(5, 1);
+    printTimeLCD(currentCadenceTime / 1000);
+  } else {
+    unsigned long currentNonCadenceTime = currentTime - stateStartTime;
+    lcd.setCursor(0, 0);
+    lcd.print("Fora de cadencia:");
+    lcd.setCursor(5, 1);
+    printTimeLCD(currentNonCadenceTime / 1000);
+  }
+  lastSensorState = sensorState;
+  delay(100);  // Atualiza a cada 1 segundo
+
+  timeClient.update();
+  
+  int currentHour = timeClient.getHours();
+  int currentMinute = timeClient.getMinutes();
+
+  // Quando for 00:00, reseta
+  if (currentHour == 0 && currentMinute == 0) {
+    lowSignalCount = 0;
+    cadenceTotalTime = 0;
+    nonCadenceTotalTime = 0;
+  }
+}
+
+// Função para exibir o tempo no formato MM:SS no LCD
+void printTimeLCD(unsigned long totalSeconds) {
+  unsigned long minutes = totalSeconds / 60;
+  unsigned long seconds = totalSeconds % 60;
+  if (minutes < 10) lcd.print("0");
+  lcd.print(minutes);
+  lcd.print(":");
+  if (seconds < 10) lcd.print("0");
+  lcd.print(seconds);
+}
